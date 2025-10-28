@@ -4,9 +4,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
   cancel-in-progress: true
 
-env:
-  MISE_NOT_FOUND_AUTO_INSTALL: 0
-
 on:
   push:
     branches: [main]
@@ -26,13 +23,11 @@ jobs:
       - name: Setup Python
         uses: ./.github/actions/setup-python
 
-      - run: mise doctor
       - name: Install formatters
         uses: jdx/mise-action@e3d7b8d67a7958d1207f6ed871e83b1ea780e7b0 # v3
         with:
           install: true
           cache: true
-          install_args: "\"cargo:taplo-cli\" dprint"
 
       - name: Run formatters
         run: |
@@ -52,7 +47,6 @@ jobs:
         with:
           install: true
           cache: true
-          install_args: "\"cargo:taplo-cli\" \"npm:@infisical/cli\""
 
       - name: Run linters
         run: |
