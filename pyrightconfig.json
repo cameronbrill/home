@@ -1,0 +1,57 @@
+// Pyright / Pylance Configuration
+// ===============================
+// https://microsoft.github.io/pyright/#/configuration
+//
+// Note: Pylance expects this file (or a pyproject.toml) to exist at the root
+// of the workspace; though we would prefer it to live under mamba/ and avoid
+// all of the relative pathing required to make that work.
+{
+    // The files that are indexed by Pylance (and exposed to Intellisense).
+    //
+    // Note: We are including all directories that contain python code, even if
+    // we don't want production code to import them. This is because pyright will
+    // only typecheck files not-included if we edit them directly, but we want to
+    // catch type errors in all files (e.g. tests) that may have been introduced by
+    // a change to another source file.
+    "include": ["."],
+    "exclude": [
+      "**/node_modules",
+      "**/__pycache__",
+      "**/.*",
+      "stubs",
+    ],
+    "executionEnvironments": [
+      {
+        "root": "tests",
+  
+        // Erroring on this rule requires a `self` argument in class-based test
+        // methods, but, thanks to pytest-magic, those methods should not actually
+        // have a `self` argument.
+        "reportSelfClsParameterName": "warning",
+  
+        // We want to test private functions/variables, so allow tests to import them.
+        "reportPrivateUsage": "warning",
+  
+        // Duck typing arguments is valid in tests, so we allow passing
+        // arguments that don't exactly match the type annotation, otherwise
+        // these rules are excessively noisy.
+        "reportArgumentType": "warning",
+        "reportCallIssue": "warning",
+  
+        // It would be ideal for the following rules to be on for test, but
+        // they're excessively noisy, so we make them quieter for now.
+        "reportAttributeAccessIssue": "information",
+        "reportUnknownArgumentType": "information",
+        "reportUnknownVariableType": "information",
+        "reportMissingParameterType": "information",
+        "reportUnknownParameterType": "information",
+  
+        // Tests get executed before code is merged, so we don't need to enforce
+        // null-checks for optional members.
+        "reportOptionalMemberAccess": "none"
+      },
+    ],
+    "venvPath": ".",
+    "venv": ".venv",
+  }
+  

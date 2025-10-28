@@ -1,0 +1,24 @@
+[project]
+name = "home"
+version = "0.1.0"
+description = "Home automation"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pylitterbot==2024.2.7",
+    "python-roborock==3.7.0",
+]
+
+[dependency-groups]
+dev = [
+    {include-group = "lint"},
+    {include-group = "test"}
+]
+lint = [
+    "pyright>=1.1.407",
+    "ruff>=0.14.2",
+]
+test = [
+    "pytest>=8.4.2",
+]
+

@@ -1,0 +1,10 @@
+[tools]
+python = "3.13.9"
+uv = "0.9.5"
+
+[tasks.sync]
+run = "uv sync --group dev"
+
+[tasks.start]
+depends = ["sync"]
+run = "infisical run -- uv run main.py"
