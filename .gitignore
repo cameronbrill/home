@@ -1,2 +1,4 @@
 .venv
 scratchpad.md
+__pycache__
+*.egg-info

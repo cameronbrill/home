@@ -1,6 +1,6 @@
 import asyncio
+from datetime import UTC, datetime, timedelta
 import os
-from datetime import datetime, timedelta, timezone
 
 from aiohttp import ClientSession
 from pylitterbot import FeederRobot, LitterRobot4
@@ -23,9 +23,7 @@ async def _get_robots(account: Account) -> tuple[FeederRobot, LitterRobot4]:
 
     try:
         print(f"Connecting to Whisker with username: {WHISKER_USERNAME}")
-        await account.connect(
-            username=WHISKER_USERNAME, password=WHISKER_PASSWORD, load_robots=True
-        )
+        await account.connect(username=WHISKER_USERNAME, password=WHISKER_PASSWORD, load_robots=True)
         print(f"Robots: {[str(robot) for robot in account.robots]}")
     finally:
         await account.disconnect()
@@ -41,13 +39,11 @@ async def _get_robots(account: Account) -> tuple[FeederRobot, LitterRobot4]:
     return feeder, litter_box
 
 
-async def _get_vacuum(
-    username: str, password: str
-) -> tuple[UserWebApiClient, HomeDataDevice]:
+async def _get_vacuum(username: str, password: str) -> tuple[UserWebApiClient, HomeDataDevice]:
     print(f"Logging in to Roborock with username: {username}")
     # Login via your password
     web_api = RoborockApiClient(username=username)
-    user_data = await web_api.pass_login(password=password)  # pyright: ignore[reportArgumentType]
+    user_data = await web_api.pass_login(password=password)
     user_web_api = UserWebApiClient(web_api, user_data)
 
     home_data = await user_web_api.get_home_data()
@@ -56,16 +52,14 @@ async def _get_vacuum(
     return user_web_api, vacuum_device
 
 
-async def main():
+async def main() -> None:
     async with ClientSession() as session:
         account = Account(websession=session)
         feeder, litter_box = await _get_robots(account)
         print(f"Feeder: {feeder}")
         print(f"{'=' * 100}")
         print(f"Litter Box: {litter_box}")
-        roborock_api_client, vacuum_device = await _get_vacuum(
-            username=ROBOROCK_USERNAME, password=ROBOROCK_PASSWORD
-        )
+        roborock_api_client, vacuum_device = await _get_vacuum(username=ROBOROCK_USERNAME, password=ROBOROCK_PASSWORD)
 
         while True:
             print("Refreshing litter box...")
@@ -75,9 +69,7 @@ async def main():
                 await asyncio.sleep(10)
                 continue
 
-            if datetime.now(tz=timezone.utc) - litter_box.last_seen > timedelta(
-                minutes=10
-            ):
+            if datetime.now(tz=UTC) - litter_box.last_seen > timedelta(minutes=10):
                 print("Litter box not seen in the last 10 minutes.")
                 await asyncio.sleep(10)
                 continue

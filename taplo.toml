@@ -1,0 +1,19 @@
+exclude = ["**/node_modules/**/*.toml", "**/.venv/**/*.toml"]
+
+[formatting]
+  align_entries  = true
+  indent_tables  = true
+  indent_entries = true
+
+[[rule]]
+  include = ["**/ty.toml", "**/.toolchain/python/ty/**/*.toml"]
+
+  [rule.schema]
+    path = "https://raw.githubusercontent.com/astral-sh/ruff/refs/heads/main/ty.schema.json"
+
+[[rule]]
+  include = ["**/ruff.toml", "**/.toolchain/python/ruff/**/*.toml"]
+
+
+  [rule.schema]
+    path = "https://raw.githubusercontent.com/astral-sh/ruff/refs/heads/main/ruff.schema.json"

@@ -1,24 +1,60 @@
 [project]
-name = "home"
-version = "0.1.0"
-description = "Home automation"
-readme = "README.md"
-requires-python = ">=3.13"
-dependencies = [
+  name = "home"
+  version = "0.1.0"
+  description = "Home automation"
+  readme = "README.md"
+  requires-python = ">=3.13"
+  dependencies = [
     "pylitterbot==2024.2.7",
     "python-roborock==3.7.0",
-]
+    "structlog==25.4.0",
+  ]
 
 [dependency-groups]
-dev = [
-    {include-group = "lint"},
-    {include-group = "test"}
-]
-lint = [
-    "pyright>=1.1.407",
-    "ruff>=0.14.2",
-]
-test = [
+  dev = [
+    { include-group = "lint" },
+    { include-group = "test" },
+    # Pretty logging
+    "rich==14.1.0",
+  ]
+  lint = ["pyright>=1.1.407", "ruff>=0.14.2", "ssort==0.15.0", "ty==0.0.1a20"]
+  test = [
     "pytest>=8.4.2",
-]
+    "pytest-asyncio>=0.25.3",
+    "pytest-cov==6.2.1",
+    "pytest-profiling==1.8.1",
+    "syrupy==4.9.1",
+  ]
 
+[build-system]
+  requires      = ["setuptools>=70"]
+  build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+  include = ["core*"]
+  exclude = ["tests*", "scripts*"]
+
+[tool.pytest.ini_options]
+  minversion = "8.0"
+  testpaths = ["tests/"]
+  pythonpath = ["."]
+  addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+    "-q",
+    "--log-cli-level=INFO",
+    "--tb=short",
+    "--no-header",
+    "--no-summary",
+    "--disable-warnings",
+  ]
+  markers = ["slow: marks tests as slow (deselect with '-m \"not slow\"')"]
+  filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+  ]
+  log_cli = true
+  log_cli_level = "INFO"
+  log_cli_format = "%(message)s"
+  log_cli_date_format = "%Y-%m-%d %H:%M:%S"

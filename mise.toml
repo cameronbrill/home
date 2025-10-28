@@ -1,10 +1,95 @@
-[tools]
-python = "3.13.9"
-uv = "0.9.5"
+[env]
+  PYTHONPATH   = "."
+  PROJECT_NAME = "home"
+  ENV          = "development"
 
-[tasks.sync]
-run = "uv sync --group dev"
+  # Tool configurations
+  RUFF_CACHE_DIR   = ".ruff_cache"
+  PYTEST_CACHE_DIR = ".pytest_cache"
+  TY_CONFIG_FILE   = "{{config_root}}/.toolchain/python/ty/base.toml"
+
+[tools]
+  "npm:@infisical/cli" = "0.43.17"
+  dprint               = "0.50.1"
+  "cargo:taplo-cli"    = "0.10.0"
+  python               = "3.13.9"
+  uv                   = "0.9.5"
+
+[tasks.deps]
+  run = "uv sync --group dev"
 
 [tasks.start]
-depends = ["sync"]
-run = "infisical run -- uv run main.py"
+  depends = ["deps"]
+  run     = "infisical run -- uv run core/main.py"
+
+[tasks.format]
+  run = "dprint fmt"
+
+[tasks."format:ci"]
+  run = "dprint check"
+
+[tasks."lint:ruff"]
+  description = "Lint code with ruff"
+  run         = "uv run ruff check ."
+
+[tasks."lint:taplo"]
+  description = "Lint code with taplo"
+  run         = "taplo lint --no-schema"
+
+[tasks."lint:infisical"]
+  description = "Scan for secrets checked into code using Infisical"
+  run         = "infisical scan"
+
+[tasks.lint]
+  depends = ["lint:*"]
+
+[tasks."lint:ci"]
+  depends = ["lint:ruff --output-format=github", "lint:taplo", "lint:infisical"]
+
+[tasks.lint-fix]
+  description = "Lint and auto-fix code with ruff"
+  run         = "uv run ruff check --fix ."
+
+[tasks."typecheck:pyright"]
+  description = "Type check with pyright"
+  run         = "uv run pyright"
+
+[tasks."typecheck:ty"]
+  description = "Type check with ty"
+  run         = "uv run ty check"
+
+[tasks.typecheck]
+  depends = ["typecheck:*"]
+
+[tasks.test]
+  description = "Run tests with pytest"
+  run         = "uv run pytest"
+
+[tasks."test:verbose"]
+  description = "Run tests with verbose output"
+  run         = "uv run pytest -vv"
+
+[tasks."test:cov"]
+  description = "Run tests with coverage"
+  run         = "uv run pytest --cov=core --cov-report=term-missing --cov-report=json:coverage.json"
+[tasks.check]
+  description = "Run all checks (format, lint, typecheck, test)"
+  depends     = ["format", "typecheck", "lint", "test"]
+  wait_for    = ["format"]
+
+[tasks.clean]
+  description = "Clean project artifacts"
+  run = """
+rm -rf build/
+rm -rf dist/
+rm -rf *.egg-info
+rm -rf .ruff_cache/
+rm -rf .pytest_cache/
+rm -rf .coverage
+rm -rf htmlcov/
+rm -rf .mypy_cache/
+find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+find . -type f -name "*.pyc" -delete
+uv clean
+echo "✅ Cleaned project artifacts"
+"""
