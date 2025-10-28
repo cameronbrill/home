@@ -453,7 +453,7 @@ test = [
 [package.metadata]
 requires-dist = [
     { name = "pylitterbot", specifier = "==2024.2.7" },
-    { name = "python-roborock", specifier = ">=3.7.0" },
+    { name = "python-roborock", specifier = "==3.7.0" },
 ]
 
 [package.metadata.requires-dev]
