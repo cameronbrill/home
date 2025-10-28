@@ -13,6 +13,8 @@ on:
 permissions:
   contents: read
 
+env:
+  MISE_YES: "0"
 jobs:
   format:
     name: Format
