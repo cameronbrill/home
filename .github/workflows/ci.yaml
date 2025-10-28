@@ -28,6 +28,7 @@ jobs:
         with:
           install: true
           cache: true
+          install_args: "\"cargo:taplo-cli\" dprint"
 
       - name: Run formatters
         run: |
@@ -47,6 +48,7 @@ jobs:
         with:
           install: true
           cache: true
+          install_args: "\"cargo:taplo-cli\" \"npm:@infisical/cli\""
 
       - name: Run linters
         run: |
