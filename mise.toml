@@ -1,7 +1,15 @@
+[settings]
+  experimental           = true
+  not_found_auto_install = false
+  auto_install           = false
+  exec_auto_install      = false
+  task_run_auto_install  = false
+
 [env]
-  PYTHONPATH   = "."
-  PROJECT_NAME = "home"
-  ENV          = "development"
+  MISE_LOG_LEVEL = "info"
+  PYTHONPATH     = "."
+  PROJECT_NAME   = "home"
+  ENV            = "development"
 
   # Tool configurations
   RUFF_CACHE_DIR   = ".ruff_cache"

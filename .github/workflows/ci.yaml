@@ -1,10 +1,14 @@
 name: CI
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
-    branches: [main, develop]
+    branches: [main]
 
 permissions:
   contents: read
@@ -24,7 +28,6 @@ jobs:
         with:
           install: true
           cache: true
-          install_args: "\"cargo:taplo-cli\" dprint"
 
       - name: Run formatters
         run: |
@@ -44,7 +47,6 @@ jobs:
         with:
           install: true
           cache: true
-          install_args: "\"cargo:taplo-cli\" \"npm:@infisical/cli\""
 
       - name: Run linters
         run: |
