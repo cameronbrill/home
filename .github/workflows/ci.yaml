@@ -85,10 +85,10 @@ jobs:
       - name: Setup Python
         uses: ./.github/actions/setup-python
 
-      - name: Run fast tests
+      - name: Run tests
         if: ${{ github.event_name == 'pull_request'}}
         run: |
-          mise run test:fast:ci
+          mise run test:ci
 
       - name: Create test summary
         uses: test-summary/action@31493c76ec9e7aa675f1585d3ed6f1da69269a86 # v2
@@ -103,14 +103,14 @@ jobs:
         run: |
           echo "<details>" > pytest-summary-wrapped.md
           echo "" >> pytest-summary-wrapped.md
-          echo "<summary>Fast Test Results</summary>" >> pytest-summary-wrapped.md
+          echo "<summary>Test Results</summary>" >> pytest-summary-wrapped.md
           echo "" >> pytest-summary-wrapped.md
           cat pytest-summary.md >> pytest-summary-wrapped.md
           echo "" >> pytest-summary-wrapped.md
           echo "</details>" >> pytest-summary-wrapped.md
           mv pytest-summary-wrapped.md pytest-summary.md
 
-      - name: Update PR with fast test results
+      - name: Update PR with test results
         uses: ./.github/actions/find-update-or-create-comment
         if: ${{ github.event_name == 'pull_request' && !cancelled() }}
         with:

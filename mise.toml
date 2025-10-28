@@ -72,6 +72,11 @@
 [tasks."test:cov"]
   description = "Run tests with coverage"
   run         = "uv run pytest --cov=core --cov-report=term-missing --cov-report=json:coverage.json"
+
+[tasks."test:ci"]
+  description = "Run tests with coverage and junit output"
+  run         = "mise run test --junit-xml=results/pytest-junit.xml"
+
 [tasks.check]
   description = "Run all checks (format, lint, typecheck, test)"
   depends     = ["format", "typecheck", "lint", "test"]
