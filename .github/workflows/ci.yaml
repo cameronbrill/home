@@ -4,6 +4,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
   cancel-in-progress: true
 
+env:
+  MISE_NOT_FOUND_AUTO_INSTALL: 0
+
 on:
   push:
     branches: [main]
