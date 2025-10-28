@@ -258,10 +258,6 @@
   // Requires explicit override declarations.
   "reportImplicitOverride": "error",
 
-  // Disabled due to many false positives. Ruff rule A005 handles
-  // this instead.
-  "reportShadowedImports": "none",
-
   // Enforces pyright: ignore comments for consistency.
   "enableTypeIgnoreComments": false,
 

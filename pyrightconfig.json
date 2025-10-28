@@ -61,17 +61,8 @@
       "reportUnnecessaryTypeIgnoreComment": "warning",
       // REASONING: When we set rules to warning level, pyright flags ignore comments as unnecessary
 
-      "reportIncompatibleMethodOverride": "warning",
+      "reportIncompatibleMethodOverride": "warning"
       // REASONING: pandas method overrides often have complex type signatures
-
-      "reportIncompatibleReturnType": "warning",
-      // REASONING: pandas return types often involve complex type hierarchies
-
-      "reportIncompatibleTypeVar": "warning",
-      // REASONING: pandas type variables often have complex constraints
-
-      "reportIncompatibleTypeVarAssignment": "warning"
-      // REASONING: pandas type variable assignments often involve complex type relationships
     },
     {
       "root": "tests",
@@ -118,5 +109,5 @@
       // REASONING: Test code uses lambdas for assertions and data transformations
       // where explicit typing would be overly verbose.
     }
-  ],
+  ]
 }

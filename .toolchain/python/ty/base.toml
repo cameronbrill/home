@@ -213,7 +213,7 @@
 
   # ty: ignore[code] directives with unknown rule codes won't suppress any errors
   # and are probably mistakes. This helps maintain clean ignore directives.
-  unknown-rule = "error"
+  ignore-comment-unknown-rule = "error"
 
   # Accessing non-existent attributes raises AttributeError at runtime.
   unresolved-attribute = "error"

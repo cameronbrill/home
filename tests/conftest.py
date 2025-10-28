@@ -116,4 +116,3 @@ def pytest_runtest_makereport(item: pytest.Item, call: pytest.CallInfo) -> pytes
         report.longrepr = None
 
     return report
-
