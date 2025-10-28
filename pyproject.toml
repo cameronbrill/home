@@ -7,7 +7,7 @@
   dependencies = [
     "pylitterbot==2024.2.7",
     "python-roborock==3.7.0",
-    "structlog==25.4.0",
+    "structlog==25.5.0",
   ]
 
 [dependency-groups]
