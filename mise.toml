@@ -4,6 +4,7 @@
   auto_install = false
 
 [env]
+  MISE_LOG_LEVEL = "debug"
   PYTHONPATH   = "."
   PROJECT_NAME = "home"
   ENV          = "development"

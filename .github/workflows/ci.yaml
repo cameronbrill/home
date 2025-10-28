@@ -13,8 +13,6 @@ on:
 permissions:
   contents: read
 
-env:
-  MISE_YES: "0"
 jobs:
   format:
     name: Format
@@ -25,6 +23,7 @@ jobs:
       - name: Setup Python
         uses: ./.github/actions/setup-python
 
+      - run: mise doctor
       - name: Install formatters
         uses: jdx/mise-action@e3d7b8d67a7958d1207f6ed871e83b1ea780e7b0 # v3
         with:
