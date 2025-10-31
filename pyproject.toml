@@ -17,7 +17,7 @@
     # Pretty logging
     "rich==14.2.0",
   ]
-  lint = ["pyright>=1.1.407", "ruff>=0.14.2", "ssort==0.15.0", "ty==0.0.1.a24"]
+  lint = ["pyright>=1.1.407", "ruff>=0.14.2", "ssort==0.15.0", "ty==0.0.1a25"]
   test = [
     "pytest>=8.4.2",
     "pytest-asyncio>=0.25.3",
