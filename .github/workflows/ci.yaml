@@ -24,7 +24,7 @@ jobs:
         uses: ./.github/actions/setup-python
 
       - name: Install formatters
-        uses: jdx/mise-action@e3d7b8d67a7958d1207f6ed871e83b1ea780e7b0 # v3
+        uses: jdx/mise-action@be3be2260bc02bc3fbf94c5e2fed8b7964baf074 # v3
         with:
           install: true
           cache: true
@@ -44,7 +44,7 @@ jobs:
         uses: ./.github/actions/setup-python
 
       - name: Install linters
-        uses: jdx/mise-action@e3d7b8d67a7958d1207f6ed871e83b1ea780e7b0 # v3
+        uses: jdx/mise-action@be3be2260bc02bc3fbf94c5e2fed8b7964baf074 # v3
         with:
           install: true
           cache: true
