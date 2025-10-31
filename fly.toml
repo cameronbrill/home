@@ -2,8 +2,7 @@ app            = "home-dfqtra"
 primary_region = "lax"
 
 [build]
-  dockerfile = "Dockerfile"
-  # image = "ghcr.io/cameronbrill/home-automation:latest"
+  image = "ghcr.io/cameronbrill/home:cb-deploy"
 
 [env]
   PYTHONUNBUFFERED        = "1"
