@@ -2,7 +2,7 @@ app            = "home-dfqtra"
 primary_region = "lax"
 
 [build]
-  image = "ghcr.io/cameronbrill/home:cb-deploy"
+  image = "ghcr.io/cameronbrill/home:latest"
 
 [env]
   PYTHONUNBUFFERED        = "1"
