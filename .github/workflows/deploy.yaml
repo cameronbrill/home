@@ -1,0 +1,177 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  IMAGE_NAME: home-automation
+
+jobs:
+  build-and-push:
+    name: Build and Push Docker Image
+    runs-on: ubicloud-standard-2
+    permissions:
+      packages: write
+    outputs:
+      image_tag: ${{ steps.image.outputs.tag }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Output image tag
+        id: image
+        run: |
+          IMAGE_TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n 1)
+          echo "tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "Built image: $IMAGE_TAG"
+
+  deploy:
+    name: Deploy to ubicloud VM
+    runs-on: ubicloud-standard-2
+    needs: build-and-push
+    steps:
+      - name: Mask secrets in logs
+        run: |
+          echo "::add-mask::${{ secrets.INFISICAL_UBICLOUD_VM_HOST }}"
+          echo "::add-mask::${{ secrets.INFISICAL_UBICLOUD_VM_USER }}"
+          echo "::add-mask::${{ secrets.INFISICAL_UBICLOUD_SSH_PRIVATE_KEY }}"
+
+      - name: Checkout code
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.INFISICAL_UBICLOUD_SSH_PRIVATE_KEY }}
+
+      - name: Add server to known hosts
+        env:
+          VM_HOST: ${{ secrets.INFISICAL_UBICLOUD_VM_HOST }}
+        run: |
+          ssh-keyscan -H "$VM_HOST" >> ~/.ssh/known_hosts
+
+      - name: Copy docker-compose.yml to server
+        env:
+          VM_HOST: ${{ secrets.INFISICAL_UBICLOUD_VM_HOST }}
+          VM_USER: ${{ secrets.INFISICAL_UBICLOUD_VM_USER }}
+        run: |
+          scp docker-compose.yml "$VM_USER@[$VM_HOST]:~/docker-compose.yml"
+
+      - name: Deploy to ubicloud VM
+        env:
+          IMAGE_TAG: ${{ needs.build-and-push.outputs.image_tag }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          VM_HOST: ${{ secrets.INFISICAL_UBICLOUD_VM_HOST }}
+          VM_USER: ${{ secrets.INFISICAL_UBICLOUD_VM_USER }}
+        run: |
+          set +x
+          ssh "$VM_USER@$VM_HOST" bash << REMOTE_SCRIPT
+            set -e
+            set +x
+
+            GITHUB_TOKEN="$GITHUB_TOKEN"
+            GITHUB_ACTOR="$GITHUB_ACTOR"
+            IMAGE_TAG="$IMAGE_TAG"
+
+            if ! command -v docker &> /dev/null; then
+              curl -fsSL https://get.docker.com -o get-docker.sh
+              sh get-docker.sh
+              rm get-docker.sh
+            fi
+
+            echo "Checking system DNS64/NAT64 configuration..."
+            RESOLV_CONF_NAMESERVER=$(grep "^nameserver" /etc/resolv.conf | head -1 | awk '{print $2}')
+            echo "Current DNS server: $RESOLV_CONF_NAMESERVER"
+            echo ""
+
+            for i in {1..3}; do
+              if echo "\$GITHUB_TOKEN" | docker login ghcr.io -u "\$GITHUB_ACTOR" --password-stdin; then
+                break
+              fi
+
+              TIMEOUT_ERROR=\$?
+              if [ \$TIMEOUT_ERROR -eq 124 ]; then
+                echo "Login timed out after 120 seconds"
+              else
+                echo "Login failed with error code: \$TIMEOUT_ERROR"
+              fi
+
+              if [ \$i -eq 3 ]; then
+                echo "Failed to login to ghcr.io after 3 attempts"
+                exit 1
+              fi
+              sleep 5
+            done
+            docker pull "\$IMAGE_TAG"
+            sed -i "s|image:.*|image: \$IMAGE_TAG|" docker-compose.yml
+            docker compose down || true
+            docker compose up -d
+            docker image prune -f
+
+            echo "Deployment complete!"
+          REMOTE_SCRIPT
+
+      - name: Verify deployment
+        env:
+          VM_HOST: ${{ secrets.INFISICAL_UBICLOUD_VM_HOST }}
+          VM_USER: ${{ secrets.INFISICAL_UBICLOUD_VM_USER }}
+        run: |
+          set +x
+          ssh "$VM_USER@[$VM_HOST]" bash << 'REMOTE_SCRIPT'
+            set -e
+            set +x
+
+            sleep 5
+
+            if docker ps | grep -q home-automation; then
+              echo "✅ Container is running"
+              docker ps | grep home-automation
+              echo ""
+              echo "Container logs (last 20 lines):"
+              docker logs --tail 20 home-automation
+            else
+              echo "❌ Container is not running"
+              docker ps -a | grep home-automation || true
+              echo ""
+              echo "Container logs:"
+              docker logs home-automation || true
+              exit 1
+            fi
+          REMOTE_SCRIPT
