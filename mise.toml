@@ -4,6 +4,7 @@
 
 [env]
   MISE_LOG_LEVEL = "info"
+  MISE_PIN       = "1"
   PYTHONPATH     = "."
   PROJECT_NAME   = "home"
   ENV            = "development"
@@ -19,6 +20,7 @@
   "cargo:taplo-cli"    = "0.10.0"
   python               = "3.13.9"
   uv                   = "0.9.7"
+  node                 = "25.1.0"
 
 [tasks.deps]
   run = "uv sync --group dev"
