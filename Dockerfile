@@ -1,8 +1,6 @@
 FROM python:3.13.9-alpine AS builder
 
-# Copy Node.js from official Node.js Alpine image (specific version, musl-compatible)
 COPY --from=node:25.1.0-alpine /usr/local/bin/node /usr/local/bin/node
-# Install npm via Alpine package manager
 RUN apk add --no-cache curl bash ca-certificates git npm
 
 ENV MISE_DATA_DIR="/mise"
@@ -25,13 +23,11 @@ WORKDIR /app
 COPY pyproject.toml uv.lock ./
 
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-dev --no-install-project
+    uv sync --frozen --no-dev
 
 FROM python:3.13.9-alpine
 
-# Copy Node.js from official Node.js Alpine image (specific version, musl-compatible)
-COPY --from=node:25-alpine /usr/local/bin/node /usr/local/bin/node
-# Install npm via Alpine package manager
+COPY --from=node:25.1.0-alpine /usr/local/bin/node /usr/local/bin/node
 RUN apk add --no-cache curl bash ca-certificates npm
 
 WORKDIR /app
@@ -44,7 +40,7 @@ COPY entrypoint.sh ./
 
 RUN chmod +x entrypoint.sh
 
-ENV PATH="/usr/local/bin:/mise/shims:$PATH" \
+ENV PATH="/app/.venv/bin:/usr/local/bin:/mise/shims:$PATH" \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
 
@@ -52,5 +48,4 @@ ENV PATH="/usr/local/bin:/mise/shims:$PATH" \
 HEALTHCHECK --interval=60s --timeout=10s --start-period=30s --retries=3 \
     CMD ps aux | grep -v grep | grep -q "python.*main.py" || exit 1
 
-# Run the application
 ENTRYPOINT ["./entrypoint.sh"]

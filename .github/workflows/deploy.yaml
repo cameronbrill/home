@@ -8,169 +8,18 @@ on:
 permissions:
   contents: read
 
-env:
-  IMAGE_NAME: home-automation
-
 jobs:
-  build-and-push:
-    name: Build and Push Docker Image
-    runs-on: ubicloud-standard-2
-    permissions:
-      packages: write
-    outputs:
-      image_tag: ${{ steps.image.outputs.tag }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=sha,prefix={{branch}}-
-            type=raw,value=latest,enable={{is_default_branch}}
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Output image tag
-        id: image
-        run: |
-          IMAGE_TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n 1)
-          echo "tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
-          echo "Built image: $IMAGE_TAG"
-
-      - name: Save Docker image as tar
-        run: |
-          IMAGE_TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n 1)
-          docker save "$IMAGE_TAG" | gzip > /tmp/image.tar.gz
-          echo "Image saved to /tmp/image.tar.gz"
-
-      - name: Upload image tarball
-        uses: actions/upload-artifact@v4
-        with:
-          name: docker-image
-          path: /tmp/image.tar.gz
-          retention-days: 1
-
   deploy:
-    name: Deploy to ubicloud VM
+    name: Deploy to Fly.io
     runs-on: ubicloud-standard-2
-    needs: build-and-push
     steps:
-      - name: Mask secrets in logs
-        run: |
-          echo "::add-mask::${{ secrets.INFISICAL_UBICLOUD_VM_HOST }}"
-          echo "::add-mask::${{ secrets.INFISICAL_UBICLOUD_VM_USER }}"
-          echo "::add-mask::${{ secrets.INFISICAL_UBICLOUD_SSH_PRIVATE_KEY }}"
-
       - name: Checkout code
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
 
-      - name: Download image tarball
-        uses: actions/download-artifact@v4
-        with:
-          name: docker-image
+      - name: Setup Fly.io CLI
+        uses: superfly/flyctl-actions/setup-flyctl@master
 
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.INFISICAL_UBICLOUD_SSH_PRIVATE_KEY }}
-
-      - name: Add server to known hosts
+      - name: Deploy to Fly.io
+        run: flyctl deploy --remote-only
         env:
-          VM_HOST: ${{ secrets.INFISICAL_UBICLOUD_VM_HOST }}
-        run: |
-          ssh-keyscan -H "$VM_HOST" >> ~/.ssh/known_hosts
-
-      - name: Copy docker-compose.yml to server
-        env:
-          VM_HOST: ${{ secrets.INFISICAL_UBICLOUD_VM_HOST }}
-          VM_USER: ${{ secrets.INFISICAL_UBICLOUD_VM_USER }}
-        run: |
-          scp docker-compose.yml "$VM_USER@[$VM_HOST]:~/docker-compose.yml"
-
-      - name: Transfer and load Docker image
-        env:
-          VM_HOST: ${{ secrets.INFISICAL_UBICLOUD_VM_HOST }}
-          VM_USER: ${{ secrets.INFISICAL_UBICLOUD_VM_USER }}
-          IMAGE_TAG: ${{ needs.build-and-push.outputs.image_tag }}
-        run: |
-          set +x
-          echo "Transferring Docker image via SSH (IPv6)..."
-          if [ ! -f docker-image/image.tar.gz ]; then
-            echo "Error: docker-image/image.tar.gz not found"
-            ls -la docker-image/ || ls -la
-            exit 1
-          fi
-          gunzip -c docker-image/image.tar.gz | ssh "$VM_USER@$VM_HOST" "sudo docker load"
-
-          ssh "$VM_USER@$VM_HOST" bash << REMOTE_SCRIPT
-            set -e
-            set +x
-
-            IMAGE_TAG="$IMAGE_TAG"
-
-            if ! command -v docker &> /dev/null; then
-              curl -fsSL https://get.docker.com -o get-docker.sh
-              sh get-docker.sh
-              rm get-docker.sh
-              sudo usermod -aG docker \$USER
-            fi
-
-            sudo sed -i "s|image:.*|image: \$IMAGE_TAG|" docker-compose.yml
-            sudo docker compose down || true
-            sudo docker compose up -d
-            sudo docker image prune -f
-
-            echo "Deployment complete!"
-          REMOTE_SCRIPT
-
-      - name: Verify deployment
-        env:
-          VM_HOST: ${{ secrets.INFISICAL_UBICLOUD_VM_HOST }}
-          VM_USER: ${{ secrets.INFISICAL_UBICLOUD_VM_USER }}
-        run: |
-          set +x
-          ssh "$VM_USER@[$VM_HOST]" bash << 'REMOTE_SCRIPT'
-            set -e
-            set +x
-
-            sleep 5
-
-            if docker ps | grep -q home-automation; then
-              echo "✅ Container is running"
-              docker ps | grep home-automation
-              echo ""
-              echo "Container logs (last 20 lines):"
-              docker logs --tail 20 home-automation
-            else
-              echo "❌ Container is not running"
-              docker ps -a | grep home-automation || true
-              echo ""
-              echo "Container logs:"
-              docker logs home-automation || true
-              exit 1
-            fi
-          REMOTE_SCRIPT
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
