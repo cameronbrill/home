@@ -1,6 +1,6 @@
-FROM python:3.13.9-alpine AS builder
+FROM python:3.13.9-alpine@sha256:e5fa639e49b85986c4481e28faa2564b45aa8021413f31026c3856e5911618b1 AS builder
 
-COPY --from=node:25.1.0-alpine /usr/local/bin/node /usr/local/bin/node
+COPY --from=node:25.1.0-alpine@sha256:7e467cc5aa91c87e94f93c4608cf234ca24aac3ec941f7f3db207367ccccdd11 /usr/local/bin/node /usr/local/bin/node
 RUN apk add --no-cache curl bash ca-certificates git npm
 
 ENV MISE_DATA_DIR="/mise"
@@ -16,7 +16,7 @@ COPY mise.toml mise.toml
 RUN mise trust .
 RUN mise install "npm:@infisical/cli"
 
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+COPY --from=ghcr.io/astral-sh/uv:latest@sha256:ba4857bf2a068e9bc0e64eed8563b065908a4cd6bfb66b531a9c424c8e25e142 /uv /usr/local/bin/uv
 
 WORKDIR /app
 
@@ -25,9 +25,9 @@ COPY pyproject.toml uv.lock ./
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev
 
-FROM python:3.13.9-alpine
+FROM python:3.13.9-alpine@sha256:e5fa639e49b85986c4481e28faa2564b45aa8021413f31026c3856e5911618b1
 
-COPY --from=node:25.1.0-alpine /usr/local/bin/node /usr/local/bin/node
+COPY --from=node:25.1.0-alpine@sha256:7e467cc5aa91c87e94f93c4608cf234ca24aac3ec941f7f3db207367ccccdd11 /usr/local/bin/node /usr/local/bin/node
 RUN apk add --no-cache curl bash ca-certificates npm
 
 WORKDIR /app
