@@ -94,6 +94,9 @@ fix = true
     "PGH", # pygrep-hooks - Various code quality checks.
     # Catches common mistakes.
 
+    "T20", # flak8-print - Prevents print statements.
+    # logging should be used instead for richer output.
+
     # Performance
     # ----------
     "PERF", # Perflint - Performance-related linting.

@@ -9,8 +9,12 @@ from pylitterbot.account import Account
 from roborock.web_api import RoborockApiClient, UserWebApiClient
 import sentry_sdk
 
+from core.logging import get_logger
+
 if TYPE_CHECKING:
     from roborock import HomeDataDevice, HomeDataScene
+
+logger = get_logger(__name__)
 
 SENTRY_DSN = os.getenv("SENTRY_DSN", "")
 
@@ -34,9 +38,9 @@ async def _get_robots(account: Account) -> tuple[FeederRobot, LitterRobot4]:
     litter_box: LitterRobot4
 
     try:
-        print(f"Connecting to Whisker with username: {WHISKER_USERNAME}")
+        logger.info("Connecting to Whisker", username=WHISKER_USERNAME)
         await account.connect(username=WHISKER_USERNAME, password=WHISKER_PASSWORD, load_robots=True)
-        print(f"Robots: {[str(robot) for robot in account.robots]}")
+        logger.info("Connected to Whisker", robots=[str(robot) for robot in account.robots])
     finally:
         await account.disconnect()
 
@@ -52,14 +56,14 @@ async def _get_robots(account: Account) -> tuple[FeederRobot, LitterRobot4]:
 
 
 async def _get_vacuum(username: str, password: str) -> tuple[UserWebApiClient, HomeDataDevice]:
-    print(f"Logging in to Roborock with username: {username}")
+    logger.info("Logging in to Roborock", username=username)
     # Login via your password
     web_api = RoborockApiClient(username=username)
     user_data = await web_api.pass_login(password=password)
     user_web_api = UserWebApiClient(web_api, user_data)
 
     home_data = await user_web_api.get_home_data()
-    print(f"Roborock home data: {home_data}")
+    logger.debug("Retrieved Roborock home data", home_data=home_data)
     vacuum_device = home_data.devices[0]
     return user_web_api, vacuum_device
 
@@ -68,28 +72,30 @@ async def main() -> None:
     async with ClientSession() as session:
         account = Account(websession=session)
         feeder, litter_box = await _get_robots(account)
-        print(f"Feeder: {feeder}")
-        print(f"{'=' * 100}")
-        print(f"Litter Box: {litter_box}")
+        logger.info("Feeder connected", feeder=feeder)
+        logger.info("Litter box connected", litter_box=litter_box)
         roborock_api_client, vacuum_device = await _get_vacuum(username=ROBOROCK_USERNAME, password=ROBOROCK_PASSWORD)
 
         while True:
-            print("Refreshing litter box...")
+            logger.info("Refreshing litter box")
             await litter_box.refresh()
             if not litter_box.last_seen:
-                print("Litter box last seen is not set.")
+                logger.warning("Litter box last seen is not set")
                 await asyncio.sleep(10)
                 continue
 
             if datetime.now(tz=UTC) - litter_box.last_seen > timedelta(minutes=10):
-                print("Litter box not seen in the last 10 minutes.")
+                logger.warning("Litter box not seen in the last 10 minutes", last_seen=litter_box.last_seen)
                 await asyncio.sleep(10)
                 continue
 
-            print("Litter box seen in the last 10 minutes. Waiting 5 minutes before vacuuming.")
+            logger.info(
+                "Litter box seen in the last 10 minutes. Waiting 5 minutes before vacuuming",
+                last_seen=litter_box.last_seen,
+            )
             await asyncio.sleep(60 * 5)
 
-            print(f"Vacuum device: {vacuum_device}")
+            logger.debug("Vacuum device ready", vacuum_device=vacuum_device)
             vacuum_routines = await roborock_api_client.get_routines(vacuum_device.duid)
             litter_routine: HomeDataScene | None = None
             for routine in vacuum_routines:
@@ -100,14 +106,14 @@ async def main() -> None:
                 break
 
             if not litter_routine:
-                print("No litter routine found.")
+                logger.warning("No litter routine found")
                 await asyncio.sleep(10)
                 continue
 
-            print(f"Executing litter routine: {litter_routine}")
+            logger.info("Executing litter routine", routine=litter_routine)
             await roborock_api_client.execute_routine(litter_routine.id)
 
-            print("Vacuuming complete. Waiting 15 minutes before next vacuum.")
+            logger.info("Vacuuming complete. Waiting 15 minutes before next vacuum")
             await asyncio.sleep(60 * 15)
 
 
