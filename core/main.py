@@ -84,9 +84,10 @@ async def main() -> None:
                 await asyncio.sleep(10)
                 continue
 
-            if datetime.now(tz=UTC) - litter_box.last_seen > timedelta(minutes=10):
-                logger.warning("Litter box not seen in the last 10 minutes", last_seen=litter_box.last_seen)
-                await asyncio.sleep(10)
+            now = datetime.now(tz=UTC)
+            if now - litter_box.last_seen > timedelta(minutes=10):
+                logger.warning("Litter box not seen in the last 10 minutes", last_seen=litter_box.last_seen, now=now)
+                await asyncio.sleep(60)
                 continue
 
             logger.info(
