@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.egg-info/
+dist/
+build/
+*.egg
+.venv/
+
+# IDEs
+.vscode/
+*.swp
+*.swo
+*~
+
+# Testing
+.pytest_cache/
+.coverage
+results/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+!README.md
+CONTRIBUTING.md
+
+# CI/CD
+.github/
+
+# Development tools
+.toolchain/
+renovate.json
+dprint.json
+taplo.toml
+ruff.toml
+pyrightconfig.json
+
+# Scripts
+scripts/
+
+# Tests
+tests/

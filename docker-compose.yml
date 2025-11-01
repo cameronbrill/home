@@ -1,0 +1,32 @@
+services:
+  home-automation:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: home-automation:latest
+    container_name: home-automation
+    restart: unless-stopped
+
+    # Environment variables for Infisical
+    environment:
+      # Required: Set these via .env file or pass them when running docker-compose
+      - INFISICAL_TOKEN=${INFISICAL_TOKEN}
+      - INFISICAL_PROJECT_ID=${INFISICAL_PROJECT_ID}
+      - INFISICAL_ENVIRONMENT=${INFISICAL_ENVIRONMENT:-prod}
+
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    # Resource limits (adjust as needed)
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512M
+        reservations:
+          cpus: "0.5"
+          memory: 256M

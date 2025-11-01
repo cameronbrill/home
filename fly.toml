@@ -1,0 +1,17 @@
+app            = "home-dfqtra"
+primary_region = "lax"
+
+[build]
+  image = "ghcr.io/cameronbrill/home:latest"
+
+[env]
+  PYTHONUNBUFFERED        = "1"
+  PYTHONDONTWRITEBYTECODE = "1"
+
+[vm]
+  memory_mb = 512
+  cpu_kind  = "shared"
+  cpus      = 1
+
+[[restart]]
+  policy = "always"
