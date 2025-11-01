@@ -1,12 +1,15 @@
 import asyncio
 from datetime import UTC, datetime, timedelta
 import os
+from typing import TYPE_CHECKING
 
 from aiohttp import ClientSession
 from pylitterbot import FeederRobot, LitterRobot4
 from pylitterbot.account import Account
-from roborock import HomeDataDevice, HomeDataScene
 from roborock.web_api import RoborockApiClient, UserWebApiClient
+
+if TYPE_CHECKING:
+    from roborock import HomeDataDevice, HomeDataScene
 
 WHISKER_USERNAME = os.getenv("WHISKER_USERNAME", "")
 WHISKER_PASSWORD = os.getenv("WHISKER_PASSWORD", "")
