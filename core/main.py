@@ -7,9 +7,18 @@ from aiohttp import ClientSession
 from pylitterbot import FeederRobot, LitterRobot4
 from pylitterbot.account import Account
 from roborock.web_api import RoborockApiClient, UserWebApiClient
+import sentry_sdk
 
 if TYPE_CHECKING:
     from roborock import HomeDataDevice, HomeDataScene
+
+SENTRY_DSN = os.getenv("SENTRY_DSN", "")
+
+sentry_sdk.init(
+    dsn=SENTRY_DSN,
+    send_default_pii=True,
+)
+
 
 WHISKER_USERNAME = os.getenv("WHISKER_USERNAME", "")
 WHISKER_PASSWORD = os.getenv("WHISKER_PASSWORD", "")

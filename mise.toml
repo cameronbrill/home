@@ -27,7 +27,7 @@
 
 [tasks.start]
   depends = ["deps"]
-  run     = "infisical run -- uv run core/main.py"
+  run     = "infisical run -- uv run python -m core.main"
 
 [tasks.format]
   run = "dprint fmt"
