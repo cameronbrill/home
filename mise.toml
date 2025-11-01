@@ -18,7 +18,7 @@
   "npm:@infisical/cli" = "0.43.21"
   dprint               = "0.50.2"
   "cargo:taplo-cli"    = "0.10.0"
-  python               = "3.13.9"
+  python               = "3.14.0"
   uv                   = "0.9.7"
   node                 = "25.1.0"
 
