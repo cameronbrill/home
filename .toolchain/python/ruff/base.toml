@@ -10,7 +10,7 @@
 # =============
 
 # Target the latest Python version we support across all projects
-target-version = "py312"
+target-version = "py314"
 
 # 120 characters is a reasonable limit for modern displays while still
 # encouraging concise code. This aligns with many Python projects.
