@@ -86,6 +86,9 @@ async def main() -> None:
                 await asyncio.sleep(10)
                 continue
 
+            print("Litter box seen in the last 10 minutes. Waiting 5 minutes before vacuuming.")
+            await asyncio.sleep(60 * 5)
+
             print(f"Vacuum device: {vacuum_device}")
             vacuum_routines = await roborock_api_client.get_routines(vacuum_device.duid)
             litter_routine: HomeDataScene | None = None
@@ -104,7 +107,8 @@ async def main() -> None:
             print(f"Executing litter routine: {litter_routine}")
             await roborock_api_client.execute_routine(litter_routine.id)
 
-            await asyncio.sleep(60)
+            print("Vacuuming complete. Waiting 15 minutes before next vacuum.")
+            await asyncio.sleep(60 * 15)
 
 
 if __name__ == "__main__":
