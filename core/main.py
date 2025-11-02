@@ -1,7 +1,7 @@
 import asyncio
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 import os
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from aiohttp import ClientSession
 from pylitterbot import FeederRobot, LitterRobot4
@@ -84,12 +84,21 @@ async def main() -> None:
             activity_history = await litter_box.get_activity_history(1)
             latest_activity = activity_history[0]
             if latest_activity.action != LitterBoxStatus.CLEAN_CYCLE_COMPLETE:
+                logger.warning("Litter box clean cycle not completed", latest_activity=latest_activity)
+                await asyncio.sleep(60)
+                continue
+            if isinstance(latest_activity.timestamp, date):  # pyright: ignore[reportUnnecessaryIsInstance]: timestamp could be a datetime
+                logger.error("Litter box clean cycle timestamp is a date", latest_activity=latest_activity)
                 await asyncio.sleep(60)
                 continue
 
             now = datetime.now(tz=UTC)
-            if now - latest_activity.timestamp > timedelta(minutes=10):
-                logger.warning("Litter box clean cycle not detected in the last 10 minutes", latest_activity=latest_activity, now=now)
+            if now - cast("datetime", latest_activity.timestamp) > timedelta(minutes=10):
+                logger.warning(
+                    "Litter box clean cycle not detected in the last 10 minutes",
+                    latest_activity=latest_activity,
+                    now=now,
+                )
                 await asyncio.sleep(60)
                 continue
 
