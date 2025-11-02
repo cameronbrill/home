@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from aiohttp import ClientSession
 from pylitterbot import FeederRobot, LitterRobot4
 from pylitterbot.account import Account
+from pylitterbot.enums import LitterBoxStatus
 from roborock.web_api import RoborockApiClient, UserWebApiClient
 import sentry_sdk
 
@@ -75,26 +76,26 @@ async def main() -> None:
         logger.info("Feeder connected", feeder=feeder)
         logger.info("Litter box connected", litter_box=litter_box)
         roborock_api_client, vacuum_device = await _get_vacuum(username=ROBOROCK_USERNAME, password=ROBOROCK_PASSWORD)
+        logger.info("Vacuum device connected", vacuum_device=vacuum_device)
 
         while True:
             logger.info("Refreshing litter box")
             await litter_box.refresh()
-            if not litter_box.last_seen:
-                logger.warning("Litter box last seen is not set")
-                await asyncio.sleep(10)
+            activity_history = await litter_box.get_activity_history(1)
+            latest_activity = activity_history[0]
+            if latest_activity.action != LitterBoxStatus.CLEAN_CYCLE_COMPLETE:
+                await asyncio.sleep(60)
                 continue
 
             now = datetime.now(tz=UTC)
-            if now - litter_box.last_seen > timedelta(minutes=10):
-                logger.warning("Litter box not seen in the last 10 minutes", last_seen=litter_box.last_seen, now=now)
+            if now - latest_activity.timestamp > timedelta(minutes=10):
+                logger.warning("Litter box clean cycle not detected in the last 10 minutes", latest_activity=latest_activity, now=now)
                 await asyncio.sleep(60)
                 continue
 
             logger.info(
-                "Litter box seen in the last 10 minutes. Waiting 5 minutes before vacuuming",
-                last_seen=litter_box.last_seen,
+                "Litter box clean cycle completed in the last 10 minutes. Vacuuming",
             )
-            await asyncio.sleep(60 * 5)
 
             logger.debug("Vacuum device ready", vacuum_device=vacuum_device)
             vacuum_routines = await roborock_api_client.get_routines(vacuum_device.duid)
