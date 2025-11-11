@@ -7,7 +7,7 @@
   dependencies = [
     "pylitterbot==2024.2.7",
     "python-roborock==3.7.0",
-    "sentry-sdk==2.43.0",
+    "sentry-sdk==2.44.0",
     "structlog==25.5.0",
   ]
 
