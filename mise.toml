@@ -15,7 +15,7 @@
   TY_CONFIG_FILE   = "{{config_root}}/.toolchain/python/ty/base.toml"
 
 [tools]
-  "npm:@infisical/cli" = "0.43.21"
+  "npm:@infisical/cli" = "0.43.24"
   dprint               = "0.50.2"
   "cargo:taplo-cli"    = "0.10.0"
   python               = "3.14.0"
