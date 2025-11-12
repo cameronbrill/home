@@ -19,7 +19,7 @@
   dprint               = "0.50.2"
   "cargo:taplo-cli"    = "0.10.0"
   python               = "3.14.0"
-  uv                   = "0.9.7"
+  uv                   = "0.9.9"
   node                 = "25.1.0"
 
 [tasks.deps]
