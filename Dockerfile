@@ -16,7 +16,7 @@ COPY mise.toml mise.toml
 RUN mise trust .
 RUN mise install "npm:@infisical/cli"
 
-COPY --from=ghcr.io/astral-sh/uv:latest@sha256:fef8e5fb8809f4b57069e919ffcd1529c92b432a2c8d8ad1768087b0b018d840 /uv /usr/local/bin/uv
+COPY --from=ghcr.io/astral-sh/uv:latest@sha256:1025398289b62de8269e70c45b91ffa37c373f38118d7da036fb8bb8efc85d97 /uv /usr/local/bin/uv
 
 WORKDIR /app
 
