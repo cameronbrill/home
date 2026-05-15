@@ -16,7 +16,7 @@
     { include-group = "lint" },
     { include-group = "test" },
     # Pretty logging
-    "rich==14.2.0",
+    "rich==14.3.4",
   ]
   lint = ["pyright>=1.1.407", "ruff>=0.14.2", "ssort==0.15.0", "ty==0.0.35"]
   test = [
