@@ -21,5 +21,6 @@
   // Keep lockfiles up to date
   "lockFileMaintenance": {
     "enabled": true
-  }
+  },
+  "schedule": ["* * * * 0,6"]
 }
