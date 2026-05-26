@@ -436,7 +436,7 @@ test = [
 [package.metadata]
 requires-dist = [
     { name = "pylitterbot", specifier = "==2025.4.0" },
-    { name = "python-roborock", specifier = "==5.12.0" },
+    { name = "python-roborock", specifier = "==5.14.0" },
     { name = "sentry-sdk", specifier = "==2.60.0" },
     { name = "structlog", specifier = "==25.5.0" },
 ]
@@ -885,7 +885,7 @@ wheels = [
 
 [[package]]
 name = "python-roborock"
-version = "5.12.0"
+version = "5.14.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -900,9 +900,9 @@ dependencies = [
     { name = "pyrate-limiter" },
     { name = "vacuum-map-parser-roborock" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/19/e6/99e00342fc165facab4325be67aa85b8a62f9dbe0b1c7ed42b08e17ff69b/python_roborock-5.12.0.tar.gz", hash = "sha256:180023aff7de9367b1c2e6bdabddc02bbd6d91c914d561044428735e54c7b70f", size = 143416, upload-time = "2026-05-17T02:43:16.95Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/64/eb/0c49da78dbfc1c9493155260dd398bee6aeb324e04d040d7d6cfc8dc85a3/python_roborock-5.14.0.tar.gz", hash = "sha256:1866b6b3854a4a1bdc3aed5b8c592dd4d37fa5c95e44e81e930e3a0c78d8b4bc", size = 143714, upload-time = "2026-05-26T01:53:08.155Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/dc/e7/503fd2d3a053b13c8e188847e99fc855fecff1a27443290542ce0df84b05/python_roborock-5.12.0-py3-none-any.whl", hash = "sha256:66201ab2f16085ec432672d1d5d5a58068a4e4274aaf05b443712d087d21bb3b", size = 186569, upload-time = "2026-05-17T02:43:15.207Z" },
+    { url = "https://files.pythonhosted.org/packages/48/c6/3f4ab776a1aed83dd1f29980ed79c661079b9d5e619b77442c5131bcafae/python_roborock-5.14.0-py3-none-any.whl", hash = "sha256:60f77d9333eda80b87ace7595085185c5774e889a46c7a1a386f6d0f0288a478", size = 187313, upload-time = "2026-05-26T01:53:06.01Z" },
 ]
 
 [[package]]
