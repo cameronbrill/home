@@ -8,7 +8,7 @@
     "pylitterbot==2025.4.0",
     "python-roborock==5.14.0",
     "sentry-sdk==2.60.0",
-    "structlog==25.5.0",
+    "structlog==26.1.0",
   ]
 
 [dependency-groups]
