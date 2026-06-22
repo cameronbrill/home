@@ -191,30 +191,6 @@ wheels = [
 ]
 
 [[package]]
-name = "click"
-version = "8.3.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/3d/fa/656b739db8587d7b5dfa22e22ed02566950fbfbcdc20311993483657a5c0/click-8.3.1.tar.gz", hash = "sha256:12ff4785d337a1bb490bb7e9c2b1ee5da3112e94a8622f26a6c77f5d2fc6842a", size = 295065, upload-time = "2025-11-15T20:45:42.706Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/98/78/01c019cdb5d6498122777c1a43056ebb3ebfeef2076d9d026bfe15583b2b/click-8.3.1-py3-none-any.whl", hash = "sha256:981153a64e25f12d547d3426c367a4857371575ee7ad18df2a6183ab0545b2a6", size = 108274, upload-time = "2025-11-15T20:45:41.139Z" },
-]
-
-[[package]]
-name = "click-shell"
-version = "2.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "click" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/9e/26/93dd93fb1714f64376989b9e809982fd64d5f26e666b6d55458066c40b53/click-shell-2.1.tar.gz", hash = "sha256:ce0c91faae284c41a39bec966f928791ad4a45763755445f1fe2041fd091aa37", size = 8421, upload-time = "2021-06-27T00:07:00.845Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/21/ce/d81dcb726c436bf3f77d0145e03bf364c189cc95e6551e797bc0511dcea0/click_shell-2.1-py2.py3-none-any.whl", hash = "sha256:2d971a2e50eb7ad387cf0ce79ba4b844e66e0580784e2efe2df58b50a2f047f0", size = 8582, upload-time = "2021-06-27T00:06:59.938Z" },
-]
-
-[[package]]
 name = "colorama"
 version = "0.4.6"
 source = { registry = "https://pypi.org/simple" }
@@ -436,7 +412,7 @@ test = [
 [package.metadata]
 requires-dist = [
     { name = "pylitterbot", specifier = "==2025.4.0" },
-    { name = "python-roborock", specifier = "==5.14.0" },
+    { name = "python-roborock", specifier = "==5.20.1" },
     { name = "sentry-sdk", specifier = "==2.60.0" },
     { name = "structlog", specifier = "==25.5.0" },
 ]
@@ -885,13 +861,11 @@ wheels = [
 
 [[package]]
 name = "python-roborock"
-version = "5.14.0"
+version = "5.20.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
     { name = "aiomqtt" },
-    { name = "click" },
-    { name = "click-shell" },
     { name = "construct" },
     { name = "paho-mqtt" },
     { name = "protobuf" },
@@ -900,9 +874,9 @@ dependencies = [
     { name = "pyrate-limiter" },
     { name = "vacuum-map-parser-roborock" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/64/eb/0c49da78dbfc1c9493155260dd398bee6aeb324e04d040d7d6cfc8dc85a3/python_roborock-5.14.0.tar.gz", hash = "sha256:1866b6b3854a4a1bdc3aed5b8c592dd4d37fa5c95e44e81e930e3a0c78d8b4bc", size = 143714, upload-time = "2026-05-26T01:53:08.155Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a0/4f/ba5b108319bf13215872e020435db7888689bf7f45cba85e708bc7dc9c5e/python_roborock-5.20.1.tar.gz", hash = "sha256:80b595e81f7a98a08cdc5e7c5685c1234d39bc2d2b2f47bce69988dd10713b9f", size = 158519, upload-time = "2026-06-22T16:45:26.723Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/48/c6/3f4ab776a1aed83dd1f29980ed79c661079b9d5e619b77442c5131bcafae/python_roborock-5.14.0-py3-none-any.whl", hash = "sha256:60f77d9333eda80b87ace7595085185c5774e889a46c7a1a386f6d0f0288a478", size = 187313, upload-time = "2026-05-26T01:53:06.01Z" },
+    { url = "https://files.pythonhosted.org/packages/db/64/b4ae519efed76347245803dcabd9e67a5e40bea640635cc86517ae365581/python_roborock-5.20.1-py3-none-any.whl", hash = "sha256:708e1f11c25a1354df959ee8efd4970278a1dd87c9bc36d764f21a53d92ea85d", size = 205204, upload-time = "2026-06-22T16:45:25.344Z" },
 ]
 
 [[package]]

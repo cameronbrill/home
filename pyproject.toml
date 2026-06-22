@@ -6,7 +6,7 @@
   requires-python = ">=3.14"
   dependencies = [
     "pylitterbot==2025.4.0",
-    "python-roborock==5.14.0",
+    "python-roborock==5.20.1",
     "sentry-sdk==2.60.0",
     "structlog==25.5.0",
   ]
