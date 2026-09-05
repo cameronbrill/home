@@ -411,7 +411,7 @@ test = [
 
 [package.metadata]
 requires-dist = [
-    { name = "pylitterbot", specifier = "==2025.4.0" },
+    { name = "pylitterbot", specifier = "==2025.6.5" },
     { name = "python-roborock", specifier = "==5.20.1" },
     { name = "sentry-sdk", specifier = "==2.60.0" },
     { name = "structlog", specifier = "==26.1.0" },
@@ -756,7 +756,7 @@ crypto = [
 
 [[package]]
 name = "pylitterbot"
-version = "2025.4.0"
+version = "2025.6.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -764,9 +764,9 @@ dependencies = [
     { name = "pycognito" },
     { name = "pyjwt" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/13/1b/d8ad6f67ea7961d583b5c17fa81c2be1d5f007448866b28b1f01ddee3e84/pylitterbot-2025.4.0.tar.gz", hash = "sha256:40852fc8c9038a7dafbbcd7c544d97a31477ad9fd15b351db7c5ede3f638b1e6", size = 44034, upload-time = "2026-05-02T14:52:33.421Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/83/33/7768130bdb281c4523e4af96b212d6364d911adb4dd9e07bded0e4abb133/pylitterbot-2025.6.5.tar.gz", hash = "sha256:6128c00385fbf843c51f379983221a2a8a71003aa9e6e1771d37bf6b337c7a5d", size = 68619, upload-time = "2026-09-04T22:32:40.031Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/00/6c/448c95a6ffbc639dabb92351da6ba30fc1be431f4d932324a4e9882870f6/pylitterbot-2025.4.0-py3-none-any.whl", hash = "sha256:e0f6975fb79d9aa55e15cb0e0a0c0d43ae1d6dc5e810c09e626f3222cb26ad22", size = 55618, upload-time = "2026-05-02T14:52:34.891Z" },
+    { url = "https://files.pythonhosted.org/packages/88/ba/b87cf7bad59f0ef1cb2484ca1e148f0393a08e17e62f2a4befed813dafc6/pylitterbot-2025.6.5-py3-none-any.whl", hash = "sha256:d9cf5f855b106b17d84dce6dc8c0d89c387a9254eb7418e0ea78ea5bbe89af13", size = 85682, upload-time = "2026-09-04T22:32:38.942Z" },
 ]
 
 [[package]]
