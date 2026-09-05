@@ -5,7 +5,7 @@
   readme = "README.md"
   requires-python = ">=3.14"
   dependencies = [
-    "pylitterbot==2025.4.0",
+    "pylitterbot==2025.6.5",
     "python-roborock==5.20.1",
     "sentry-sdk==2.60.0",
     "structlog==26.1.0",
