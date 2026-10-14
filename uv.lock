@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.14"
 
 [[package]]
@@ -301,18 +301,6 @@ wheels = [
 ]
 
 [[package]]
-name = "deepdiff"
-version = "8.6.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "orderly-set" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/19/76/36c9aab3d5c19a94091f7c6c6e784efca50d87b124bf026c36e94719f33c/deepdiff-8.6.1.tar.gz", hash = "sha256:ec56d7a769ca80891b5200ec7bd41eec300ced91ebcc7797b41eb2b3f3ff643a", size = 634054, upload-time = "2025-09-03T19:40:41.461Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/f7/e6/efe534ef0952b531b630780e19cabd416e2032697019d5295defc6ef9bd9/deepdiff-8.6.1-py3-none-any.whl", hash = "sha256:ee8708a7f7d37fb273a541fa24ad010ed484192cd0c4ffc0fa0ed5e2d4b9e78b", size = 91378, upload-time = "2025-09-03T19:40:39.679Z" },
-]
-
-[[package]]
 name = "envs"
 version = "1.4"
 source = { registry = "https://pypi.org/simple" }
@@ -411,7 +399,7 @@ test = [
 
 [package.metadata]
 requires-dist = [
-    { name = "pylitterbot", specifier = "==2025.4.0" },
+    { name = "pylitterbot", specifier = "==2025.7.0" },
     { name = "python-roborock", specifier = "==5.20.1" },
     { name = "sentry-sdk", specifier = "==2.60.0" },
     { name = "structlog", specifier = "==26.1.0" },
@@ -544,15 +532,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/24/bf/d1bda4f6168e0b2e9e5958945e01910052158313224ada5ce1fb2e1113b8/nodeenv-1.10.0.tar.gz", hash = "sha256:996c191ad80897d076bdfba80a41994c2b47c68e224c542b48feba42ba00f8bb", size = 55611, upload-time = "2025-12-20T14:08:54.006Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/88/b2/d0896bdcdc8d28a7fc5717c305f1a861c26e18c05047949fb371034d98bd/nodeenv-1.10.0-py2.py3-none-any.whl", hash = "sha256:5bb13e3eed2923615535339b3c620e76779af4cb4c6a90deccc9e36b274d3827", size = 23438, upload-time = "2025-12-20T14:08:52.782Z" },
-]
-
-[[package]]
-name = "orderly-set"
-version = "5.5.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/4a/88/39c83c35d5e97cc203e9e77a4f93bf87ec89cf6a22ac4818fdcc65d66584/orderly_set-5.5.0.tar.gz", hash = "sha256:e87185c8e4d8afa64e7f8160ee2c542a475b738bc891dc3f58102e654125e6ce", size = 27414, upload-time = "2025-07-10T20:10:55.885Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/12/27/fb8d7338b4d551900fa3e580acbe7a0cf655d940e164cb5c00ec31961094/orderly_set-5.5.0-py3-none-any.whl", hash = "sha256:46f0b801948e98f427b412fcabb831677194c05c3b699b80de260374baa0b1e7", size = 13068, upload-time = "2025-07-10T20:10:54.377Z" },
 ]
 
 [[package]]
@@ -756,17 +735,16 @@ crypto = [
 
 [[package]]
 name = "pylitterbot"
-version = "2025.4.0"
+version = "2025.7.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
-    { name = "deepdiff" },
     { name = "pycognito" },
     { name = "pyjwt" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/13/1b/d8ad6f67ea7961d583b5c17fa81c2be1d5f007448866b28b1f01ddee3e84/pylitterbot-2025.4.0.tar.gz", hash = "sha256:40852fc8c9038a7dafbbcd7c544d97a31477ad9fd15b351db7c5ede3f638b1e6", size = 44034, upload-time = "2026-05-02T14:52:33.421Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a0/33/3f50b29bbea6dda5260b878aea8464328872f35afa360393b0cd91455193/pylitterbot-2025.7.0.tar.gz", hash = "sha256:fcdc4c0cbd88e98cdeba9a2963ccea89e9522223840380ca5a029fb4ca28a13e", size = 69569, upload-time = "2026-10-14T16:05:06.934Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/00/6c/448c95a6ffbc639dabb92351da6ba30fc1be431f4d932324a4e9882870f6/pylitterbot-2025.4.0-py3-none-any.whl", hash = "sha256:e0f6975fb79d9aa55e15cb0e0a0c0d43ae1d6dc5e810c09e626f3222cb26ad22", size = 55618, upload-time = "2026-05-02T14:52:34.891Z" },
+    { url = "https://files.pythonhosted.org/packages/66/16/34b51de3e83b9a5261fac0e25afd8535caaad4b03dab3c7b384a5c77fad3/pylitterbot-2025.7.0-py3-none-any.whl", hash = "sha256:756ba77b12c9706b3ba5e8987f822a22bf0cb8c5dfa3953f0a3237799e8b5956", size = 86406, upload-time = "2026-10-14T16:05:05.872Z" },
 ]
 
 [[package]]
