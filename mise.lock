@@ -22,6 +22,24 @@ checksum = "sha256:1d6a8fb14d66cba0f049738edd4ab3b1afc1de6d936cd32e483e33284cfd1
 url = "https://github.com/dprint/dprint/releases/download/0.54.0/dprint-aarch64-apple-darwin.zip"
 url_api = "https://api.github.com/repos/dprint/dprint/releases/assets/391792290"
 
+[[tools."github:rwx-cloud/rwx"]]
+version = "3.36.1"
+backend = "github:rwx-cloud/rwx"
+specifiers = [
+    "3.36.1",
+    "latest",
+]
+
+[tools."github:rwx-cloud/rwx"."platforms.linux-x64"]
+checksum = "sha256:8a88c69fe325d0f56cb21b61768969b6d20b13a87ce751c1b6a5ac0b50b36b62"
+url = "https://github.com/rwx-cloud/rwx/releases/download/v3.36.1/rwx-linux-x86_64"
+url_api = "https://api.github.com/repos/rwx-cloud/rwx/releases/assets/648047285"
+
+[tools."github:rwx-cloud/rwx"."platforms.macos-arm64"]
+checksum = "sha256:6e9c6d2981d896599a15291432984d7679c275614e366612968aa4910d9ce862"
+url = "https://github.com/rwx-cloud/rwx/releases/download/v3.36.1/rwx-darwin-aarch64"
+url_api = "https://api.github.com/repos/rwx-cloud/rwx/releases/assets/648049330"
+
 [[tools.node]]
 version = "25.9.0"
 backend = "core:node"
@@ -55,6 +73,14 @@ provenance = "github-attestations"
 checksum = "sha256:3a0373cc39fefd494754ef555267f245c720cddbaaabf63a7c9a4269f1e56532"
 url = "https://github.com/astral-sh/python-build-standalone/releases/download/20260602/cpython-3.14.5+20260602-aarch64-apple-darwin-install_only_stripped.tar.gz"
 provenance = "github-attestations"
+
+[[tools.rust]]
+version = "1.97.1"
+backend = "core:rust"
+specifiers = [
+    "1.97.1",
+    "latest",
+]
 
 [[tools.uv]]
 version = "0.11.23"

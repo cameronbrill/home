@@ -1,7 +1,12 @@
 FROM python:3.14.5-alpine@sha256:5a824eb82cc75361f98611f3cfc5091ea33f10a6ccea4d4ebdabbc523b9a1614 AS builder
 
 COPY --from=node:25.9.0-alpine@sha256:bdf2cca6fe3dabd014ea60163eca3f0f7015fbd5c7ee1b0e9ccb4ced6eb02ef4 /usr/local/bin/node /usr/local/bin/node
-RUN apk add --no-cache curl bash ca-certificates git npm
+COPY --from=node:25.9.0-alpine@sha256:bdf2cca6fe3dabd014ea60163eca3f0f7015fbd5c7ee1b0e9ccb4ced6eb02ef4 /usr/local/lib/node_modules /usr/local/lib/node_modules
+RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm
+
+# Added tar and xz so mise can extract target binary archives
+RUN apk add --no-cache curl bash ca-certificates git tar xz
+RUN apk add --no-cache libstdc++
 
 ENV MISE_DATA_DIR="/mise"
 ENV MISE_CONFIG_DIR="/mise"
@@ -14,6 +19,8 @@ RUN curl https://mise.run | sh
 COPY mise.toml mise.toml
 
 RUN mise trust .
+ENV MISE_ALL_COMPILE=false
+RUN mise install "node"
 RUN mise install "npm:@infisical/cli"
 
 COPY --from=ghcr.io/astral-sh/uv:latest@sha256:d0a0a753ab981624b49c97abc98821c1c09f4ca69d1ef5cee69c501be3d88479 /uv /usr/local/bin/uv
@@ -28,7 +35,10 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 FROM python:3.14.5-alpine@sha256:5a824eb82cc75361f98611f3cfc5091ea33f10a6ccea4d4ebdabbc523b9a1614
 
 COPY --from=node:25.9.0-alpine@sha256:bdf2cca6fe3dabd014ea60163eca3f0f7015fbd5c7ee1b0e9ccb4ced6eb02ef4 /usr/local/bin/node /usr/local/bin/node
-RUN apk add --no-cache curl bash ca-certificates npm
+COPY --from=node:25.9.0-alpine@sha256:bdf2cca6fe3dabd014ea60163eca3f0f7015fbd5c7ee1b0e9ccb4ced6eb02ef4 /usr/local/lib/node_modules /usr/local/lib/node_modules
+RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm
+
+RUN apk add --no-cache curl bash ca-certificates
 
 WORKDIR /app
 
@@ -44,7 +54,6 @@ ENV PATH="/app/.venv/bin:/usr/local/bin:/mise/shims:$PATH" \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
 
-# Health check - the app doesn't expose a port but we can check if process is running
 HEALTHCHECK --interval=60s --timeout=10s --start-period=30s --retries=3 \
     CMD ps aux | grep -v grep | grep -q "python.*main.py" || exit 1
 
