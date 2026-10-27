@@ -1,7 +1,8 @@
 import asyncio
 from datetime import UTC, datetime, timedelta
 import os
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
+from zoneinfo import ZoneInfo
 
 from aiohttp import ClientSession
 from pylitterbot import FeederRobot, LitterRobot4
@@ -13,7 +14,7 @@ import sentry_sdk
 from core.logging import get_logger
 
 if TYPE_CHECKING:
-    from roborock import HomeDataDevice, HomeDataScene
+    from roborock import HomeDataDevice, HomeDataScene  # pyright: ignore[reportPrivateImportUsage]
 
 logger = get_logger(__name__)
 
@@ -107,10 +108,16 @@ async def main() -> None:
             )
 
             logger.debug("Vacuum device ready", vacuum_device=vacuum_device)
+
+            now_pacific_time = now.astimezone(tz=ZoneInfo("America/Los_Angeles"))
+            relevant_litter_routine_name: Literal["Litter"] | Literal["Litter (quiet)"] = "Litter"
+            if now_pacific_time.hour < 9 or now_pacific_time.hour > 22:
+                relevant_litter_routine_name = "Litter (quiet)"
+
             vacuum_routines = await roborock_api_client.get_routines(vacuum_device.duid)
             litter_routine: HomeDataScene | None = None
             for routine in vacuum_routines:
-                if routine.name != "Litter":
+                if routine.name != relevant_litter_routine_name:
                     continue
 
                 litter_routine = routine
