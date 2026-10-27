@@ -17,7 +17,7 @@ tasks:
     with:
       repository: https://github.com/cameronbrill/home.git
       ref: ${{ init.commit-sha }}
-      github-token: ${{ github.token }}
+      github-token: ${{ secrets.GITHUB_TOKEN }}
 
   - key: mise-cli
     call: mise/install 1.1.1
