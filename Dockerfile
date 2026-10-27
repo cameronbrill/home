@@ -6,6 +6,7 @@ RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm
 
 # Added tar and xz so mise can extract target binary archives
 RUN apk add --no-cache curl bash ca-certificates git tar xz
+RUN apk add --no-cache libstdc++
 
 ENV MISE_DATA_DIR="/mise"
 ENV MISE_CONFIG_DIR="/mise"
