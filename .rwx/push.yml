@@ -67,7 +67,7 @@ tasks:
     use: build
     # Conditionally execute on specific trigger actions
     if: |
-      "push" in tags || "workflow_dispatch" in tags
+        `${{"push" in tags || "workflow_dispatch" in tags}}`
     run: |
       # Install Flyctl and push deployments
       curl -L https://fly.io | sh
