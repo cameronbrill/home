@@ -19,11 +19,19 @@ tasks:
       ref: ${{ init.commit-sha }}
       github-token: ${{ github.token }}
 
-  - key: mise
-    use: code
+  - key: mise-cli
     call: mise/install 1.1.1
-    filter:
-      - mise.toml
+    with:
+      install: "false"
+
+  - key: mise-base
+    use: [code, mise-cli]
+    filter: [mise.toml, .mise/]
+    run: mise install node rust python
+
+  - key: mise
+    use: mise-base
+    run: mise install
 
   - key: lint
     use: mise
@@ -66,9 +74,14 @@ tasks:
   - key: deploy
     use: build
     # Conditionally execute on specific trigger actions
-    if: |
-        `${{"push" in tags || "workflow_dispatch" in tags}}`
+    env:
+      EVENT_NAME: ${{ github.event_name || "cli" }}
+    # if: ${{ github.event_name && contains(github.event_name, "push") || contains(github.event_name, "workflow_dispatch") }}
     run: |
+      if [ "$EVENT_NAME" != "push" ] && [ "$EVENT_NAME" != "workflow_dispatch" ] && [ "$EVENT_NAME" != "cli" ]; then
+        echo "Skipping deployment step for event: $EVENT_NAME"
+        exit 0
+      fi
       # Install Flyctl and push deployments
       curl -L https://fly.io | sh
       export FLYCTL_INSTALL="/root/.fly"
