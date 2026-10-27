@@ -1,0 +1,77 @@
+on:
+  cli:
+    init:
+      commit-sha: ${{ event.git.sha }}
+  github:
+    pull_request:
+      init:
+        commit-sha: ${{ event.git.sha }}
+
+base:
+  image: ubuntu:26.04
+  config: rwx/base 1.2.0
+
+tasks:
+  - key: code
+    call: git/clone 2.2.0
+    with:
+      repository: https://github.com/cameronbrill/home.git
+      ref: ${{ init.commit-sha }}
+      github-token: ${{ github.token }}
+
+  - key: mise
+    use: code
+    call: mise/install 1.1.1
+    filter:
+      - mise.toml
+
+  - key: lint
+    use: mise
+    run: mise run lint:ci --continue-on-error
+
+  - key: format
+    use: mise
+    run: mise run format:ci
+
+  - key: typecheck-slow
+    use: mise
+    run: mise run typecheck:ty
+
+  - key: typecheck-fast
+    use: mise
+    run: mise run typecheck:pyright
+
+  - key: test
+    use: mise
+    run: mise run test:ci
+
+  - key: build
+    use: [mise, lint, format, typecheck-slow, typecheck-fast, test]
+    run: |
+      # Log in to GitHub Container Registry using RWX Vault variables
+      echo "$GITHUB_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+
+      # Extract metadata & determine branch names dynamically
+      if [ "$RWX_TRIGGER_EVENT" = "pull_request" ]; then
+        BRANCH_NAME="$RWX_TRIGGER_HEAD_REF"
+      else
+        BRANCH_NAME="$RWX_TRIGGER_REF_NAME"
+      fi
+
+      # Define parameters for RWX native OCI builds
+      # Write tags and configuration instructions directly to the RWX_IMAGE folder
+      echo "ghcr.io/$RWX_REPOSITORY_OWNER/$IMAGE_NAME:latest" >> $RWX_IMAGE/tags
+      echo "ghcr.io/$RWX_REPOSITORY_OWNER/$IMAGE_NAME:$BRANCH_NAME-${RWX_RUN_ID:0:7}" >> $RWX_IMAGE/tags
+
+  - key: deploy
+    use: build
+    # Conditionally execute on specific trigger actions
+    if: |
+      "push" in tags || "workflow_dispatch" in tags
+    run: |
+      # Install Flyctl and push deployments
+      curl -L https://fly.io | sh
+      export FLYCTL_INSTALL="/root/.fly"
+      export PATH="$FLYCTL_INSTALL/bin:$PATH"
+
+      flyctl deploy --image ghcr.io/$RWX_REPOSITORY_OWNER/$IMAGE_NAME:latest
