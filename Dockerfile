@@ -18,6 +18,7 @@ RUN curl https://mise.run | sh
 COPY mise.toml mise.toml
 
 RUN mise trust .
+ENV MISE_ALL_COMPILE=false
 RUN mise install "node"
 RUN mise install "npm:@infisical/cli"
 
