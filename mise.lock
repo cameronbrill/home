@@ -36,10 +36,10 @@ checksum = "sha256:e479f3c469d3d9303a44f00a8ea37a3788395d171bb8059c48a4bbbd2e371
 url = "https://nodejs.org/dist/v25.9.0/node-v25.9.0-darwin-arm64.tar.gz"
 
 [[tools."npm:@infisical/cli"]]
-version = "0.43.86"
-aube = { path = ".mise/locks/npm-infisical-cli/0.43.86", digest = "sha256:82dcdd951aefe91ae69bf6a3447e6922f154a27ebcc6fd472068859b5f95fb36" }
+version = "0.44.10"
+aube = { path = ".mise/locks/npm-infisical-cli/0.44.10", digest = "sha256:cf2086d192e157abc381382d25d3255cd0420bd96f64769d8b7aee7e72334683" }
 backend = "npm:@infisical/cli"
-specifiers = ["0.43.86"]
+specifiers = ["0.44.10"]
 
 [[tools.python]]
 version = "3.14.5"
