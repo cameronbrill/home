@@ -9,13 +9,13 @@ importers:
   .:
     dependencies:
       '@infisical/cli':
-        specifier: 0.43.86
-        version: 0.43.86
+        specifier: 0.44.10
+        version: 0.44.10
 
 packages:
 
-  '@infisical/cli@0.43.86':
-    resolution: {integrity: sha512-gHzlfY9+5B7XUpKdoBQWSiu7t+34OEMpHjhQ31NqU1gc8tJHGZopU/3c5q6TkhcGW84D96YcmHOJrFE/URSfyw==}
+  '@infisical/cli@0.44.10':
+    resolution: {integrity: sha512-BRq+JAQxOed2i9OPgbARgv9RSroIQSu8ZbvTBAuN8hu/5aZW1As3fAjfspYe+1xTvRxGUq++Jcl9BceP7/wamg==}
     hasBin: true
 
   '@isaacs/fs-minipass@4.0.1':
@@ -51,7 +51,7 @@ packages:
 
 snapshots:
 
-  '@infisical/cli@0.43.86':
+  '@infisical/cli@0.44.10':
     dependencies:
       tar: 7.5.22
       yauzl: 3.4.0
