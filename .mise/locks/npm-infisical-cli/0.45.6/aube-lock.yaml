@@ -9,13 +9,13 @@ importers:
   .:
     dependencies:
       '@infisical/cli':
-        specifier: 0.43.86
-        version: 0.43.86
+        specifier: 0.45.6
+        version: 0.45.6
 
 packages:
 
-  '@infisical/cli@0.43.86':
-    resolution: {integrity: sha512-gHzlfY9+5B7XUpKdoBQWSiu7t+34OEMpHjhQ31NqU1gc8tJHGZopU/3c5q6TkhcGW84D96YcmHOJrFE/URSfyw==}
+  '@infisical/cli@0.45.6':
+    resolution: {integrity: sha512-TclkBhlp0J09LfVTbB4ybvGRKk4YumLzYo48lKtJBUlpzxxgGY5hFjIF8Y7vCZv/9MOA4PAbmgKd5qJwgxKzHw==}
     hasBin: true
 
   '@isaacs/fs-minipass@4.0.1':
@@ -37,8 +37,8 @@ packages:
   pend@1.2.0:
     resolution: {integrity: sha512-F3asv42UuXchdzt+xXqfW1OGlVBe+mxa2mqI0pg5yAHZPvFmY3Y6drSf/GQ1A86WgWEN9Kzh/WrgKa6iGcHXLg==}
 
-  tar@7.5.22:
-    resolution: {integrity: sha512-MFO/QzvtAOmJbkhOaCTvbGcFN9L9b+JunIsDwaKljSOdcLMea3NJ1k9Usz/rjdfSXTq4dfzfeS7W4p4YOAAHeA==}
+  tar@7.5.23:
+    resolution: {integrity: sha512-lkukzdoGngZHJZXxW4S/E4Fp9ghTDlyZXrQGRNoJ/LXvDKcXUTq2sg5yQe74po7Voea6n/IN09+wE/QvJMiifA==}
     engines: {node: '>=18'}
 
   yallist@5.0.0:
@@ -51,9 +51,9 @@ packages:
 
 snapshots:
 
-  '@infisical/cli@0.43.86':
+  '@infisical/cli@0.45.6':
     dependencies:
-      tar: 7.5.22
+      tar: 7.5.23
       yauzl: 3.4.0
 
   '@isaacs/fs-minipass@4.0.1':
@@ -70,7 +70,7 @@ snapshots:
 
   pend@1.2.0: {}
 
-  tar@7.5.22:
+  tar@7.5.23:
     dependencies:
       '@isaacs/fs-minipass': 4.0.1
       chownr: 3.0.0
