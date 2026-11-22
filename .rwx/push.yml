@@ -7,7 +7,7 @@ on:
     pull_request:
       init:
         commit-sha: ${{ event.git.sha }}
-        branch: ${{ event.github.pull_request.head.ref }}
+        branch: ${{ event.github.pull_request.pull_request.head.ref }}
 
 # Pull request and CLI runs only publish immutable commit tags. Production
 # deploys live in main.yml, which has no CLI or pull request trigger.
