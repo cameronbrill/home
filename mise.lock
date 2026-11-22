@@ -49,7 +49,7 @@ url = "https://nodejs.org/dist/v25.9.0/node-v25.9.0-darwin-arm64.tar.gz"
 
 [[tools."npm:@infisical/cli"]]
 version = "0.43.86"
-aube = { path = ".mise/locks/npm-infisical-cli/0.43.86", digest = "sha256:82dcdd951aefe91ae69bf6a3447e6922f154a27ebcc6fd472068859b5f95fb36" }
+aube = { path = ".mise/locks/npm-infisical-cli/0.43.86", digest = "sha256:26ffb7e425e079f6f47fe3eca29cbb7f5b64313d7cad6c4c3b0d479104928741" }
 backend = "npm:@infisical/cli"
 specifiers = ["0.43.86"]
 
