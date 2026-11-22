@@ -2,11 +2,6 @@
 
 lockfile_version = 3
 
-[[tools."cargo:taplo-cli"]]
-version = "0.10.0"
-backend = "cargo:taplo-cli"
-specifiers = ["0.10.0"]
-
 [[tools.dprint]]
 version = "0.54.0"
 backend = "aqua:dprint/dprint"
@@ -74,13 +69,20 @@ checksum = "sha256:3a0373cc39fefd494754ef555267f245c720cddbaaabf63a7c9a4269f1e56
 url = "https://github.com/astral-sh/python-build-standalone/releases/download/20260602/cpython-3.14.5+20260602-aarch64-apple-darwin-install_only_stripped.tar.gz"
 provenance = "github-attestations"
 
-[[tools.rust]]
-version = "1.97.1"
-backend = "core:rust"
-specifiers = [
-    "1.97.1",
-    "latest",
-]
+[[tools.taplo]]
+version = "0.10.0"
+backend = "aqua:tamasfe/taplo"
+specifiers = ["0.10.0"]
+
+[tools.taplo."platforms.linux-x64"]
+checksum = "sha256:8fe196b894ccf9072f98d4e1013a180306e17d244830b03986ee5e8eabeb6156"
+url = "https://github.com/tamasfe/taplo/releases/download/0.10.0/taplo-linux-x86_64.gz"
+url_api = "https://api.github.com/repos/tamasfe/taplo/releases/assets/257322600"
+
+[tools.taplo."platforms.macos-arm64"]
+checksum = "sha256:713734314c3e71894b9e77513c5349835eefbd52908445a0d73b0c7dc469347d"
+url = "https://github.com/tamasfe/taplo/releases/download/0.10.0/taplo-darwin-aarch64.gz"
+url_api = "https://api.github.com/repos/tamasfe/taplo/releases/assets/257323110"
 
 [[tools.uv]]
 version = "0.11.23"
