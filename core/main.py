@@ -12,6 +12,12 @@ from roborock.web_api import RoborockApiClient, UserWebApiClient
 import sentry_sdk
 
 from core.logging import get_logger
+from core.roborock_auth import (
+    RoborockAuthenticationError,
+    discover_api_base_url,
+    login_from_session,
+    login_with_password,
+)
 
 if TYPE_CHECKING:
     from roborock import HomeDataDevice, HomeDataScene  # pyright: ignore[reportPrivateImportUsage]
@@ -22,7 +28,8 @@ SENTRY_DSN = os.getenv("SENTRY_DSN", "")
 
 sentry_sdk.init(
     dsn=SENTRY_DSN,
-    send_default_pii=True,
+    send_default_pii=False,
+    include_local_variables=False,
 )
 
 
@@ -30,9 +37,12 @@ WHISKER_USERNAME = os.getenv("WHISKER_USERNAME", "")
 WHISKER_PASSWORD = os.getenv("WHISKER_PASSWORD", "")
 ROBOROCK_USERNAME = os.getenv("ROBOROCK_USERNAME", "")
 ROBOROCK_PASSWORD = os.getenv("ROBOROCK_PASSWORD", "")
+ROBOROCK_SESSION = os.getenv("ROBOROCK_SESSION", "")
 
-if not all([WHISKER_USERNAME, WHISKER_PASSWORD, ROBOROCK_USERNAME, ROBOROCK_PASSWORD]):
+if not all([WHISKER_USERNAME, WHISKER_PASSWORD, ROBOROCK_USERNAME]):
     raise ValueError("Missing required environment variables")
+if not ROBOROCK_SESSION and not ROBOROCK_PASSWORD:
+    raise ValueError("Missing Roborock session or password")
 
 
 async def _get_robots(account: Account) -> tuple[FeederRobot, LitterRobot4]:
@@ -40,9 +50,13 @@ async def _get_robots(account: Account) -> tuple[FeederRobot, LitterRobot4]:
     litter_box: LitterRobot4
 
     try:
-        logger.info("Connecting to Whisker", username=WHISKER_USERNAME)
+        logger.info("Connecting to Whisker")
         await account.connect(username=WHISKER_USERNAME, password=WHISKER_PASSWORD, load_robots=True)
-        logger.info("Connected to Whisker", robots=[str(robot) for robot in account.robots])
+        logger.info(
+            "Connected to Whisker",
+            robot_count=len(account.robots),
+            robot_types=[type(robot).__name__ for robot in account.robots],
+        )
     finally:
         await account.disconnect()
 
@@ -57,15 +71,34 @@ async def _get_robots(account: Account) -> tuple[FeederRobot, LitterRobot4]:
     return feeder, litter_box
 
 
-async def _get_vacuum(username: str, password: str) -> tuple[UserWebApiClient, HomeDataDevice]:
-    logger.info("Logging in to Roborock", username=username)
-    # Login via your password
-    web_api = RoborockApiClient(username=username)
-    user_data = await web_api.pass_login(password=password)
-    user_web_api = UserWebApiClient(web_api, user_data)
+async def _get_vacuum(
+    username: str, password: str, stored_session: str, session: ClientSession
+) -> tuple[UserWebApiClient, HomeDataDevice]:
+    if stored_session:
+        logger.info("Using stored Roborock session")
+        try:
+            login_result = login_from_session(stored_session)
+        except RoborockAuthenticationError as error:
+            logger.exception(
+                "Stored Roborock session is invalid; refresh ROBOROCK_SESSION",
+                reason=str(error),
+            )
+            raise
+    else:
+        logger.info("Logging in to Roborock")
+        login_result = await login_with_password(
+            session=session,
+            username=username,
+            password=password,
+        )
+    base_url = login_result.base_url
+    if base_url is None:
+        base_url = await discover_api_base_url(session, username)
+    web_api = RoborockApiClient(username=username, base_url=base_url, session=session)
+    user_web_api = UserWebApiClient(web_api, login_result.user_data)
 
     home_data = await user_web_api.get_home_data()
-    logger.debug("Retrieved Roborock home data", home_data=home_data)
+    logger.debug("Retrieved Roborock home data", device_count=len(home_data.devices))
     vacuum_device = home_data.devices[0]
     return user_web_api, vacuum_device
 
@@ -76,8 +109,13 @@ async def main() -> None:
         feeder, litter_box = await _get_robots(account)
         logger.info("Feeder connected", feeder=feeder)
         logger.info("Litter box connected", litter_box=litter_box)
-        roborock_api_client, vacuum_device = await _get_vacuum(username=ROBOROCK_USERNAME, password=ROBOROCK_PASSWORD)
-        logger.info("Vacuum device connected", vacuum_device=vacuum_device)
+        roborock_api_client, vacuum_device = await _get_vacuum(
+            username=ROBOROCK_USERNAME,
+            password=ROBOROCK_PASSWORD,
+            stored_session=ROBOROCK_SESSION,
+            session=session,
+        )
+        logger.info("Vacuum device connected", device_name=vacuum_device.name)
 
         while True:
             logger.info("Refreshing litter box")
@@ -107,7 +145,7 @@ async def main() -> None:
                 "Litter box clean cycle completed in the last 10 minutes. Vacuuming",
             )
 
-            logger.debug("Vacuum device ready", vacuum_device=vacuum_device)
+            logger.debug("Vacuum device ready", device_name=vacuum_device.name)
 
             now_pacific_time = now.astimezone(tz=ZoneInfo("America/Los_Angeles"))
             relevant_litter_routine_name: Literal["Litter"] | Literal["Litter (quiet)"] = "Litter"

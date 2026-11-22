@@ -376,6 +376,7 @@ name = "home"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "pycryptodome" },
     { name = "pylitterbot" },
     { name = "python-roborock" },
     { name = "sentry-sdk" },
@@ -411,6 +412,7 @@ test = [
 
 [package.metadata]
 requires-dist = [
+    { name = "pycryptodome", specifier = "==3.23.0" },
     { name = "pylitterbot", specifier = "==2025.4.0" },
     { name = "python-roborock", specifier = "==5.20.1" },
     { name = "sentry-sdk", specifier = "==2.60.0" },

@@ -74,5 +74,5 @@ tasks:
 
       /app/.venv/bin/python -m compileall -q /app/core
       WHISKER_USERNAME=smoke WHISKER_PASSWORD=smoke \
-        ROBOROCK_USERNAME=smoke ROBOROCK_PASSWORD=smoke \
+        ROBOROCK_USERNAME=smoke ROBOROCK_SESSION=smoke \
         /app/.venv/bin/python -c 'import sys; sys.path.insert(0, "/app"); import core.main'

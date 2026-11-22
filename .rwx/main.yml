@@ -43,10 +43,30 @@ tasks:
       FLY_API_TOKEN:
         value: ${{ secrets.FLY_API_TOKEN }}
         cache-key: excluded
+      ROBOROCK_SESSION:
+        value: ${{ secrets.ROBOROCK_SESSION }}
+        cache-key: excluded
       FLY_CONFIG: ${{ tasks.build-image.tasks.runtime-files.artifacts.fly-config }}
       IMAGE_REF: ${{ tasks.publish-image.tasks.publish-image.values.image-ref }}
     run: |
       set -euo pipefail
+      if [ -z "$ROBOROCK_SESSION" ] || [ "$(printf '%s' "$ROBOROCK_SESSION" | wc -l | tr -d ' ')" -ne 0 ]; then
+        echo "ROBOROCK_SESSION must be non-empty single-line JSON" >&2
+        exit 1
+      fi
+      printf '%s' "$ROBOROCK_SESSION" | jq -e '
+        (type == "object")
+        and ((.token | type) == "string") and ((.token | length) > 0)
+        and ((.rriot.r.a | type) == "string")
+        and (.rriot.r.a | startswith("https://"))
+        and ((.rriot.r.a | endswith(".roborock.com")) or (.rriot.r.a == "https://roborock.com"))
+      ' >/dev/null
+      printf 'ROBOROCK_SESSION=%s\n' "$ROBOROCK_SESSION" |
+        flyctl secrets import --app home-dfqtra --stage
+      secret_list="$(flyctl secrets list --app home-dfqtra)"
+      if grep -qw ROBOROCK_PASSWORD <<< "$secret_list"; then
+        flyctl secrets unset ROBOROCK_PASSWORD --app home-dfqtra --stage
+      fi
       flyctl deploy \
         --app home-dfqtra \
         --config "$FLY_CONFIG" \
