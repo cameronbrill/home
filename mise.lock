@@ -3,19 +3,21 @@
 lockfile_version = 3
 
 [[tools.dprint]]
-version = "0.54.0"
+version = "0.65.0"
 backend = "aqua:dprint/dprint"
-specifiers = ["0.54.0"]
+specifiers = ["0.65.0"]
 
 [tools.dprint."platforms.linux-x64"]
-checksum = "sha256:8cb5925a0d6d0d8aa74c82a00f76734577592dfa1eda9517c261a84fe06accd7"
-url = "https://github.com/dprint/dprint/releases/download/0.54.0/dprint-x86_64-unknown-linux-gnu.zip"
-url_api = "https://api.github.com/repos/dprint/dprint/releases/assets/391792287"
+checksum = "sha256:d1aaf0c6d015931b860804eda5bf7fac9d29e2253351b7d6b0177e6b03a8776d"
+url = "https://github.com/dprint/dprint/releases/download/0.65.0/dprint-x86_64-unknown-linux-gnu.zip"
+url_api = "https://api.github.com/repos/dprint/dprint/releases/assets/756773175"
+provenance = "github-attestations"
 
 [tools.dprint."platforms.macos-arm64"]
-checksum = "sha256:1d6a8fb14d66cba0f049738edd4ab3b1afc1de6d936cd32e483e33284cfd1ade"
-url = "https://github.com/dprint/dprint/releases/download/0.54.0/dprint-aarch64-apple-darwin.zip"
-url_api = "https://api.github.com/repos/dprint/dprint/releases/assets/391792290"
+checksum = "sha256:5e57a5e75f5d29d1f9dcc10255fccb9815031f4720fe6759643d0ee12cf201f2"
+url = "https://github.com/dprint/dprint/releases/download/0.65.0/dprint-aarch64-apple-darwin.zip"
+url_api = "https://api.github.com/repos/dprint/dprint/releases/assets/756773168"
+provenance = "github-attestations"
 
 [[tools."github:rwx-cloud/rwx"]]
 version = "3.38.1"
