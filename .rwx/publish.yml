@@ -16,10 +16,10 @@ tasks:
       BRANCH: ${{ init.branch }}
       COMMIT_SHA: ${{ init.commit-sha }}
       ADD_LATEST: ${{ init.add-latest }}
-      IMAGE_REPOSITORY: ghcr.io/cameronbrill/home
-      GHCR_USERNAME: cameronbrill
-      GHCR_TOKEN:
-        value: ${{ secrets.GITHUB_TOKEN }}
+      IMAGE_REPOSITORY: registry.fly.io/home-dfqtra
+      REGISTRY_USERNAME: x
+      REGISTRY_PASSWORD:
+        value: ${{ secrets.FLY_API_TOKEN }}
         cache-key: excluded
     run: |
       set -euo pipefail
@@ -37,7 +37,7 @@ tasks:
         PUSH_ARGS+=(--to "$IMAGE_REPOSITORY:latest")
       fi
 
-      echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USERNAME" --password-stdin
+      echo "$REGISTRY_PASSWORD" | docker login registry.fly.io -u "$REGISTRY_USERNAME" --password-stdin
       rwx image push "$IMAGE_TASK_ID" "${PUSH_ARGS[@]}"
       printf '%s\n' "$IMAGE_REF" > "$RWX_VALUES/image-ref"
       echo "Published immutable image: $IMAGE_REF"
