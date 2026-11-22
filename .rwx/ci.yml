@@ -16,11 +16,12 @@ tasks:
 
   - key: mise-base
     use: [code, mise-cli]
-    filter: [mise.toml, .mise/]
-    run: mise install node rust python
+    filter: [mise.toml, mise.lock, .mise/]
+    run: mise install node python
 
   - key: mise
     use: mise-base
+    filter: [mise.toml, mise.lock, .mise/]
     run: mise install
 
   - key: lint
