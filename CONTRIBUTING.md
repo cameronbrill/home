@@ -40,6 +40,10 @@ mise run test
 
 ## CI
 
-### Github Actions
+### RWX
 
-We use ubicloud for fast github action runners.
+CI runs on [RWX](https://www.rwx.com). Every pull request and CLI run executes
+the checks defined in [.rwx/ci.yml](.rwx/ci.yml) (format, lint, typecheck,
+test) plus a native OCI image build, and publishes an immutable image tag to
+Fly's private registry. Merges to main additionally update the registry's
+`latest` tag and deploy the image to Fly.
