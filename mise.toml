@@ -21,7 +21,7 @@
   python                 = "3.14.5"
   uv                     = "0.11.23"
   node                   = "25.9.0"
-  "github:rwx-cloud/rwx" = "3.36.1"
+  "github:rwx-cloud/rwx" = "v3.38.1"
 
 [tasks.deps]
   run = "uv sync --group dev"
