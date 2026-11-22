@@ -3,5 +3,5 @@ set -euo pipefail
 
 echo "=== Home Automation Service Starting ==="
 
-python -m core.main
+exec python -m core.main
 

@@ -1,0 +1,78 @@
+base:
+  image: python:3.14.5-alpine@sha256:5a824eb82cc75361f98611f3cfc5091ea33f10a6ccea4d4ebdabbc523b9a1614
+  config: none
+
+tasks:
+  - key: workspace
+    run: |
+      mkdir -p /app
+      echo "/app" > "$RWX_IMAGE/workspace"
+
+  - key: system
+    use: workspace
+    run: apk add --no-cache bash ca-certificates curl git jq openssh
+
+  - key: uv
+    use: system
+    env:
+      UV_VERSION: 0.11.23
+      UV_INSTALL_DIR: /usr/local/bin
+      INSTALLER_NO_MODIFY_PATH: "1"
+    run: |
+      curl --proto "=https" --tlsv1.2 -LsSf "https://astral.sh/uv/$UV_VERSION/install.sh" | sh
+      uv --version
+
+  - key: code
+    use: system
+    call: git/clone 2.4.1
+    with:
+      repository: https://github.com/cameronbrill/home.git
+      ref: ${{ init.commit-sha }}
+
+  - key: dependencies
+    use: [code, uv]
+    filter: [pyproject.toml, uv.lock]
+    env:
+      UV_PROJECT_ENVIRONMENT: /app/.venv
+    run: uv sync --frozen --no-dev --no-install-project --no-cache
+    outputs:
+      artifacts:
+        - key: venv
+          path: .venv
+
+  - key: runtime-files
+    use: code
+    run: chmod +x entrypoint.sh
+    outputs:
+      artifacts:
+        - key: core
+          path: core
+        - key: entrypoint
+          path: entrypoint.sh
+        - key: fly-config
+          path: fly.toml
+
+  - key: runtime-system
+    use: workspace
+    run: apk add --no-cache bash ca-certificates
+
+  - key: image
+    use: runtime-system
+    env:
+      PATH: /app/.venv/bin
+      PYTHONUNBUFFERED: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    run: |
+      cp -a "${{ tasks.dependencies.artifacts.venv }}" /app/.venv
+      cp -a "${{ tasks.runtime-files.artifacts.core }}" /app/core
+      cp -a "${{ tasks.runtime-files.artifacts.entrypoint }}" /app/entrypoint.sh
+      chmod +x /app/entrypoint.sh
+
+      echo "/app" > "$RWX_IMAGE/workspace"
+      printf '["/app/entrypoint.sh"]\n' > "$RWX_IMAGE/entrypoint.json"
+      printf '[]\n' > "$RWX_IMAGE/command.json"
+
+      /app/.venv/bin/python -m compileall -q /app/core
+      WHISKER_USERNAME=smoke WHISKER_PASSWORD=smoke \
+        ROBOROCK_USERNAME=smoke ROBOROCK_PASSWORD=smoke \
+        /app/.venv/bin/python -c 'import sys; sys.path.insert(0, "/app"); import core.main'

@@ -1,0 +1,44 @@
+base:
+  image: ubuntu:26.04
+  config: rwx/base 1.2.0
+
+tasks:
+  - key: code
+    call: git/clone 2.4.1
+    with:
+      repository: https://github.com/cameronbrill/home.git
+      ref: ${{ init.commit-sha }}
+
+  - key: mise-cli
+    call: mise/install 1.1.1
+    with:
+      install: "false"
+
+  - key: mise-base
+    use: [code, mise-cli]
+    filter: [mise.toml, .mise/]
+    run: mise install node rust python
+
+  - key: mise
+    use: mise-base
+    run: mise install
+
+  - key: lint
+    use: mise
+    run: mise run lint:ci --continue-on-error
+
+  - key: format
+    use: mise
+    run: mise run format:ci
+
+  - key: typecheck-slow
+    use: mise
+    run: mise run typecheck:ty
+
+  - key: typecheck-fast
+    use: mise
+    run: mise run typecheck:pyright
+
+  - key: test
+    use: mise
+    run: mise run test:ci

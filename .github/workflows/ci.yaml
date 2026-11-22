@@ -14,9 +14,6 @@ on:
 permissions:
   contents: read
 
-env:
-  IMAGE_NAME: home
-
 jobs:
   format:
     name: Format
@@ -146,70 +143,3 @@ jobs:
         if: ${{ !cancelled() }}
         run: |
           mise run test:cov
-
-  build:
-    name: Build Docker Image
-    runs-on: ubicloud-standard-2
-    needs: [test, lint, type-check, format]
-    permissions:
-      packages: write
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4
-
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Determine branch name
-        id: branch
-        run: |
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
-            echo "name=${{ github.head_ref }}" >> $GITHUB_OUTPUT
-          else
-            echo "name=${{ github.ref_name }}" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6
-        with:
-          images: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=sha,prefix=${{ steps.branch.outputs.name }}-,format=short
-            type=raw,value=latest,enable={{is_default_branch}}
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-  deploy:
-    name: Deploy to Fly.io
-    runs-on: ubicloud-standard-2
-    needs: [build]
-    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
-
-      - name: Setup Fly.io CLI
-        uses: superfly/flyctl-actions/setup-flyctl@63da3ecc5e2793b98a3f2519b3d75d4f4c11cec2
-
-      - name: Deploy to Fly.io
-        run: flyctl deploy --remote-only
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

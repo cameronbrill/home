@@ -13,5 +13,8 @@ primary_region = "lax"
   cpu_kind  = "shared"
   cpus      = 1
 
+# This worker exposes no network service. Fly monitors the entrypoint process
+# directly and restarts it if it exits; entrypoint.sh execs Python to preserve
+# signal delivery and process health.
 [[restart]]
   policy = "always"
