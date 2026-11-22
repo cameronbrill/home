@@ -1,0 +1,43 @@
+base:
+  image: ubuntu:26.04
+  config: rwx/base 1.2.0
+
+tasks:
+  - key: rwx-cli
+    call: rwx/install-cli 4.1.0
+    with:
+      cli-version: v3.36.1
+
+  - key: publish-image
+    use: rwx-cli
+    cache: false
+    env:
+      IMAGE_TASK_ID: ${{ init.image-task-id }}
+      BRANCH: ${{ init.branch }}
+      COMMIT_SHA: ${{ init.commit-sha }}
+      ADD_LATEST: ${{ init.add-latest }}
+      IMAGE_REPOSITORY: ghcr.io/cameronbrill/home
+      GHCR_USERNAME: cameronbrill
+      GHCR_TOKEN:
+        value: ${{ secrets.GITHUB_TOKEN }}
+        cache-key: excluded
+    run: |
+      set -euo pipefail
+
+      if [[ ! "$COMMIT_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+        echo "Invalid commit SHA: $COMMIT_SHA" >&2
+        exit 1
+      fi
+
+      SAFE_BRANCH="$(sed 's/[^A-Za-z0-9_.-]/-/g' <<< "$BRANCH")"
+      IMAGE_REF="$IMAGE_REPOSITORY:$SAFE_BRANCH-${COMMIT_SHA:0:12}"
+      PUSH_ARGS=(--to "$IMAGE_REF")
+
+      if [ "$ADD_LATEST" = "true" ]; then
+        PUSH_ARGS+=(--to "$IMAGE_REPOSITORY:latest")
+      fi
+
+      echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USERNAME" --password-stdin
+      rwx image push "$IMAGE_TASK_ID" "${PUSH_ARGS[@]}"
+      printf '%s\n' "$IMAGE_REF" > "$RWX_VALUES/image-ref"
+      echo "Published immutable image: $IMAGE_REF"
