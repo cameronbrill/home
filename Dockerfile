@@ -23,7 +23,7 @@ ENV MISE_ALL_COMPILE=false
 RUN mise install "node"
 RUN mise install "npm:@infisical/cli"
 
-COPY --from=ghcr.io/astral-sh/uv:latest@sha256:d0a0a753ab981624b49c97abc98821c1c09f4ca69d1ef5cee69c501be3d88479 /uv /usr/local/bin/uv
+COPY --from=ghcr.io/astral-sh/uv:latest@sha256:a3ea1357342c1a4bf9a0c53a3deb1b55379aefa037338d8113d5771efa01774f /uv /usr/local/bin/uv
 
 WORKDIR /app
 
