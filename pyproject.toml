@@ -8,7 +8,7 @@
     "pycryptodome==3.23.0",
     "pylitterbot==2025.4.0",
     "python-roborock==5.20.1",
-    "sentry-sdk==2.60.0",
+    "sentry-sdk==2.77.0",
     "structlog==26.1.0",
   ]
 
