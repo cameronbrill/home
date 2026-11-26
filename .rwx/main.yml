@@ -5,6 +5,9 @@ on:
       init:
         commit-sha: ${{ event.git.sha }}
         branch: ${{ event.git.branch }}
+  cli:
+    init:
+      commit-sha: ${{ event.git.sha }}
 
 base:
   image: ubuntu:26.04
@@ -72,3 +75,25 @@ tasks:
         --config "$FLY_CONFIG" \
         --image "$IMAGE_REF" \
         --yes
+
+      started_count="$(
+        flyctl machine list --app home-dfqtra --json \
+          | jq '[.[] | select(.state == "started")] | length'
+      )"
+      if [ "$started_count" -eq 0 ]; then
+        stopped_machine_id="$(
+          flyctl machine list --app home-dfqtra --json \
+            | jq -r '[.[] | select(.state == "stopped")][0].id // empty'
+        )"
+        if [ -n "$stopped_machine_id" ]; then
+          flyctl machine start "$stopped_machine_id" --app home-dfqtra --wait
+        fi
+        started_count="$(
+          flyctl machine list --app home-dfqtra --json \
+            | jq '[.[] | select(.state == "started")] | length'
+        )"
+      fi
+      if [ "$started_count" -eq 0 ]; then
+        echo "Deploy finished with no started machines" >&2
+        exit 1
+      fi
